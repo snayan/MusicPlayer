@@ -19,8 +19,7 @@ extension UIImageView {
             return
         }
         
-        let secureSrc = src.starts(with: "https") ? src : src.replacingOccurrences(of: "http", with: "https")
-        guard let url = URL(string: secureSrc) else {
+        guard let url = URL.ATS(string: src) else {
             self.image = fall
             return
         }

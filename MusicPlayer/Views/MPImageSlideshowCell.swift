@@ -13,18 +13,16 @@ class MPImageSlideshowCell: UICollectionViewCell {
     
     static let reuseIdentifier = "MPImageSlideshowCell"
     
-    lazy var data: [UIImage] = {
-        var imageViews: [UIImage] = []
-        for i in 0..<5 {
-            imageViews.append(UIImage(named: "slider\(i+1)")!)
+    var data: [String?]? {
+        didSet {
+            self.slideshow.data = filterData(from: data)
         }
-        return imageViews
-    }()
+    }
     
     lazy var slideshow: MPImageSlideshowView = {
         let slideshow = MPImageSlideshowView()
         slideshow.interval = 5
-        slideshow.data = self.data
+        slideshow.data = filterData(from: data)
         return slideshow
     }()
     
@@ -47,5 +45,17 @@ class MPImageSlideshowCell: UICollectionViewCell {
         slideshow.snp.makeConstraints{ make in
             make.edges.equalToSuperview()
         }
+    }
+    
+    fileprivate func filterData(from data: [String?]?) -> [String] {
+        var result: [String] = []
+        if let data = data {
+            for url in data {
+                if url != nil {
+                    result.append(url!)
+                }
+            }
+        }
+        return result
     }
 }

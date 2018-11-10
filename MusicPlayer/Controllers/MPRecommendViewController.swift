@@ -15,7 +15,6 @@ class MPRecommendViewController: UICollectionViewController {
     var data = MPRecommendHomeData.defaultData {
         didSet {
             // data 改变了，更新页面上的值
-            //            print(data)
             DispatchQueue.main.async {
                 self.collectionView?.reloadData()
             }
@@ -128,7 +127,7 @@ class MPRecommendViewController: UICollectionViewController {
         
         if isHeader(at: indexPath) {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MPImageSlideshowCell.reuseIdentifier, for: indexPath) as! MPImageSlideshowCell
-            
+            cell.data = data.slider?.map(){$0.picUrl}
             cell.setNeedsLayout()
             return cell
         } else if isSongSection(at: indexPath) {
