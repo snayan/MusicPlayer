@@ -273,6 +273,9 @@ class MPImageSlideshowView: UIView {
         if showPage < slideshowImages.count {
             let visibleRect = CGRect(x: scrollView.bounds.width*CGFloat(showPage), y: scrollView.frame.origin.y, width: scrollView.bounds.width, height: scrollView.bounds.height)
             scrollView.scrollRectToVisible(visibleRect, animated: true)
+            let width = scrollView.frame.size.width
+            let index = Int(width > 0 ? scrollView.contentOffset.x / width : 0)
+            slideshowImages[(index + 1) % slideshowImages.count].loadImage()
         }
     }
     
@@ -298,12 +301,10 @@ extension MPImageSlideshowView: UIScrollViewDelegate {
         if circular {
             let width = scrollView.frame.size.width
             let regularContentOffset = width * CGFloat(data.count)
-            let index = Int(width > 0 ? scrollView.contentOffset.x / width : 0)
             if scrollView.contentOffset.x >= regularContentOffset * 2 - width {
                 scrollView.contentOffset = CGPoint(x: scrollView.contentOffset.x - regularContentOffset, y: 0)
                 showPage = data.count - 1
             }
-            slideshowImages[(index + 1) % slideshowImages.count].loadImage()
         }
     }
     
