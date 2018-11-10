@@ -159,8 +159,14 @@ class MPImageSlideshowView: UIView {
             scrollView.isUserInteractionEnabled = draggingEnabled
         }
     }
-    // 预先加载图片数量
-    var preLoadCount: Int = 2
+    // 预先加载图片数量,bug：下拉再回去时，有时没显示出来图片，所以先设置预先加载所有的图片
+    var preLoadCount: Int = 100 {
+        didSet {
+            if preLoadCount < 2 {
+                preLoadCount = 2
+            }
+        }
+    }
     
     
     // MARK: initilizar
@@ -273,9 +279,6 @@ class MPImageSlideshowView: UIView {
         if showPage < slideshowImages.count {
             let visibleRect = CGRect(x: scrollView.bounds.width*CGFloat(showPage), y: scrollView.frame.origin.y, width: scrollView.bounds.width, height: scrollView.bounds.height)
             scrollView.scrollRectToVisible(visibleRect, animated: true)
-            let width = scrollView.frame.size.width
-            let index = Int(width > 0 ? scrollView.contentOffset.x / width : 0)
-            slideshowImages[(index + 1) % slideshowImages.count].loadImage()
         }
     }
     
