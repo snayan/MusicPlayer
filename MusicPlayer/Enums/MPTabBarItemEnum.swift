@@ -20,6 +20,7 @@ enum MPTabBarItemEnum: String {
             iconName = "RecommendIcon"
         case .Rank:
             iconName = "RankIcon"
+            
         case .Search:
             iconName = "SearchIcon"
         }

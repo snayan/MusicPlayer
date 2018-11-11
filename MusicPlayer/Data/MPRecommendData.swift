@@ -46,7 +46,7 @@ struct MPRecommendHomeData: Decodable {
         data = Data()
     }
     
-    static var defaultData: MPRecommendHomeData.Data = {
+    fileprivate(set) static var defaultData: MPRecommendHomeData.Data = {
         var d = MPRecommendHomeData()
         d.data.radioList = (0...1).map{ _ in RadioData() }
         d.data.slider = [SlideData()]

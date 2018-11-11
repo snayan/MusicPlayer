@@ -10,7 +10,7 @@ import UIKit
 
 extension UIImageView {
     
-    func downloaded(from src: String?, contentMode mode: UIViewContentMode = .scaleAspectFit, useFallImage fall: UIImage? ) -> Void {
+    func downloaded(from src: String?, contentMode mode: UIViewContentMode = .scaleAspectFit, useFallImage fall: UIImage? = nil ) -> Void {
         
         contentMode = mode
         

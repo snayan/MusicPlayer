@@ -24,7 +24,7 @@ class MPBoxSongViewCell: UICollectionViewCell {
                 titleCell.text = songData.songListDesc
                 authorCell.text = songData.songListAuthor
                 if let accessnum = songData.accessnum {
-                    listenersCell.text = accessnum > 10000 ? "\(Float(accessnum) / 10000)万" : String(accessnum)
+                    listenersCell.text = accessnum > 10000 ? "\(floorf(Float(accessnum) / 100)/100)万" : String(accessnum)
                 }
             } else {
                 imageCell.image = defaultImage
