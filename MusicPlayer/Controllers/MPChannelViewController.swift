@@ -12,7 +12,7 @@ class MPChannelViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = UIColor.brown
         // Do any additional setup after loading the view.
     }
 

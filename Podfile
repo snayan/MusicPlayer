@@ -7,6 +7,7 @@ target 'MusicPlayer' do
 
   # Pods for MusicPlayer
   pod 'SnapKit', '~> 4.0'
+  pod 'Hero'
 
   target 'MusicPlayerTests' do
     inherit! :search_paths

@@ -7,25 +7,30 @@
 //
 
 import UIKit
+import Hero
 
 class MPTabBarChildViewController: UINavigationController {
     
+    fileprivate let heroTransition = HeroTransition()
+    
     convenience init (type tabBarItem: MPTabBarItemEnum) {
-        
         self.init(rootViewController: tabBarItem.getTabBarViewController())
         self.tabBarItem = UITabBarItem(title: tabBarItem.rawValue, image: tabBarItem.getTabBarIcon(), selectedImage: nil)
         self.navigationBar.backgroundColor = UIColor(named: "themeColor")
+        self.delegate = self
+        self.hero.navigationAnimationType = .autoReverse(presenting: .slide(direction: .left))
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+}
 
-        // Do any additional setup after loading the view.
+extension MPTabBarChildViewController: UINavigationControllerDelegate {
+    
+    func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return heroTransition.navigationController(navigationController, interactionControllerFor: animationController)
+
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationControllerOperation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return heroTransition.navigationController(navigationController, animationControllerFor: operation, from: fromVC, to: toVC)
     }
-
 }
