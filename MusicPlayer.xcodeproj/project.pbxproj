@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2D9D5D8E594A4D32A3D7BB36 /* Pods_MusicPlayerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F11C89F81F956B26F5F41269 /* Pods_MusicPlayerTests.framework */; };
 		7B70C814F0243A3C86DD42AD /* Pods_MusicPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A18DFB26413558465D66BA2 /* Pods_MusicPlayer.framework */; };
+		E02D586B219930FB00208FE2 /* MPChannelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02D586A219930FB00208FE2 /* MPChannelViewController.swift */; };
 		E04AA3572196D9B500A40CFB /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04AA3562196D9B500A40CFB /* URL.swift */; };
 		E04AA3592197FD3700A40CFB /* MPRankTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04AA3582197FD3700A40CFB /* MPRankTableViewCell.swift */; };
 		E04AA35B2198034A00A40CFB /* MPRankData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04AA35A2198034A00A40CFB /* MPRankData.swift */; };
@@ -67,6 +68,7 @@
 		6D8546A4049BA7ACD2E22DA0 /* Pods_MusicPlayerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MusicPlayerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE2CB32E322C0005EF68E01B /* Pods-MusicPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusicPlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-MusicPlayer/Pods-MusicPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		DDB188FD9D997023583A9406 /* Pods-MusicPlayerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusicPlayerTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MusicPlayerTests/Pods-MusicPlayerTests.release.xcconfig"; sourceTree = "<group>"; };
+		E02D586A219930FB00208FE2 /* MPChannelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelViewController.swift; sourceTree = "<group>"; };
 		E04AA3562196D9B500A40CFB /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		E04AA3582197FD3700A40CFB /* MPRankTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPRankTableViewCell.swift; sourceTree = "<group>"; };
 		E04AA35A2198034A00A40CFB /* MPRankData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPRankData.swift; sourceTree = "<group>"; };
@@ -224,6 +226,7 @@
 				E082715421967589000E8CCD /* MPRecommendViewController.swift */,
 				E08271582196759B000E8CCD /* MPSearchViewController.swift */,
 				E082715A219675E0000E8CCD /* MPRankViewController.swift */,
+				E02D586A219930FB00208FE2 /* MPChannelViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -503,6 +506,7 @@
 				E082714B2196752F000E8CCD /* MPBoxSongViewCell.swift in Sources */,
 				E04AA3572196D9B500A40CFB /* URL.swift in Sources */,
 				E082715521967589000E8CCD /* MPRecommendViewController.swift in Sources */,
+				E02D586B219930FB00208FE2 /* MPChannelViewController.swift in Sources */,
 				E082714721967518000E8CCD /* MPImageSlideshowView.swift in Sources */,
 				E082715B219675E0000E8CCD /* MPRankViewController.swift in Sources */,
 				E08271592196759B000E8CCD /* MPSearchViewController.swift in Sources */,
