@@ -35,12 +35,23 @@ class MPChannelViewCell: UITableViewCell {
         createLabel(fontSize: 12, fontColor: UIColor.gray)
     }()
     
-    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(title)
         contentView.addSubview(subTitle)
+        selectionStyle = .none
         makeConstraints()
+    }
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        if selected {
+            title.textColor = UIColor(named: "themeLightColor")
+            subTitle.textColor = UIColor(named: "themeLightColor")
+        } else {
+            title.textColor = UIColor.black
+            subTitle.textColor = UIColor.gray
+        }
+        super.setSelected(selected, animated: animated)
     }
     
     fileprivate func createLabel(fontSize size: Float, fontColor color: UIColor, fontWeight weight: UIFont.Weight = UIFont.Weight.regular) -> UILabel {
