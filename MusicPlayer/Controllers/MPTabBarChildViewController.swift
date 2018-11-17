@@ -16,7 +16,9 @@ class MPTabBarChildViewController: UINavigationController {
     convenience init (type tabBarItem: MPTabBarItemEnum) {
         self.init(rootViewController: tabBarItem.getTabBarViewController())
         self.tabBarItem = UITabBarItem(title: tabBarItem.rawValue, image: tabBarItem.getTabBarIcon(), selectedImage: nil)
-        self.navigationBar.backgroundColor = UIColor(named: "themeColor")
+        self.navigationBar.barTintColor = UIColor(named: "themeColor")
+        self.navigationBar.tintColor = UIColor.white
+        self.navigationBar.isTranslucent = false
         self.delegate = self
         self.hero.navigationAnimationType = .autoReverse(presenting: .slide(direction: .left))
     }

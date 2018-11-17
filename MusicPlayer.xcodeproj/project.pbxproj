@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		2D9D5D8E594A4D32A3D7BB36 /* Pods_MusicPlayerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F11C89F81F956B26F5F41269 /* Pods_MusicPlayerTests.framework */; };
 		7B70C814F0243A3C86DD42AD /* Pods_MusicPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A18DFB26413558465D66BA2 /* Pods_MusicPlayer.framework */; };
+		E00323E3219DA9C500BF96BE /* MPChannelViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00323E2219DA9C500BF96BE /* MPChannelViewHeader.swift */; };
+		E00323E5219DAA0C00BF96BE /* MPChannelViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00323E4219DAA0C00BF96BE /* MPChannelViewCell.swift */; };
+		E00323E7219DB0EA00BF96BE /* MPChannelData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00323E6219DB0EA00BF96BE /* MPChannelData.swift */; };
+		E00323E9219FC87E00BF96BE /* MPChannelAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00323E8219FC87E00BF96BE /* MPChannelAPI.swift */; };
 		E02D586B219930FB00208FE2 /* MPChannelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02D586A219930FB00208FE2 /* MPChannelViewController.swift */; };
 		E04AA3572196D9B500A40CFB /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04AA3562196D9B500A40CFB /* URL.swift */; };
 		E04AA3592197FD3700A40CFB /* MPRankTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04AA3582197FD3700A40CFB /* MPRankTableViewCell.swift */; };
@@ -68,6 +72,10 @@
 		6D8546A4049BA7ACD2E22DA0 /* Pods_MusicPlayerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MusicPlayerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE2CB32E322C0005EF68E01B /* Pods-MusicPlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusicPlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-MusicPlayer/Pods-MusicPlayer.release.xcconfig"; sourceTree = "<group>"; };
 		DDB188FD9D997023583A9406 /* Pods-MusicPlayerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusicPlayerTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MusicPlayerTests/Pods-MusicPlayerTests.release.xcconfig"; sourceTree = "<group>"; };
+		E00323E2219DA9C500BF96BE /* MPChannelViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelViewHeader.swift; sourceTree = "<group>"; };
+		E00323E4219DAA0C00BF96BE /* MPChannelViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelViewCell.swift; sourceTree = "<group>"; };
+		E00323E6219DB0EA00BF96BE /* MPChannelData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelData.swift; sourceTree = "<group>"; };
+		E00323E8219FC87E00BF96BE /* MPChannelAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelAPI.swift; sourceTree = "<group>"; };
 		E02D586A219930FB00208FE2 /* MPChannelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelViewController.swift; sourceTree = "<group>"; };
 		E04AA3562196D9B500A40CFB /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		E04AA3582197FD3700A40CFB /* MPRankTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPRankTableViewCell.swift; sourceTree = "<group>"; };
@@ -215,6 +223,8 @@
 				E082714E21967541000E8CCD /* MPCollectionEmptyCell.swift */,
 				E082715021967549000E8CCD /* MPCopyrightViewCell.swift */,
 				E04AA3582197FD3700A40CFB /* MPRankTableViewCell.swift */,
+				E00323E2219DA9C500BF96BE /* MPChannelViewHeader.swift */,
+				E00323E4219DAA0C00BF96BE /* MPChannelViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -237,6 +247,7 @@
 				E082715C21967650000E8CCD /* MPBaseData.swift */,
 				E082715E21967659000E8CCD /* MPRecommendData.swift */,
 				E04AA35A2198034A00A40CFB /* MPRankData.swift */,
+				E00323E6219DB0EA00BF96BE /* MPChannelData.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -273,6 +284,7 @@
 				E0827168219676EA000E8CCD /* MPBaseURLSession.swift */,
 				E082716A219676F3000E8CCD /* MPRecommendAPI.swift */,
 				E04AA35C219822F800A40CFB /* MPRankAPI.swift */,
+				E00323E8219FC87E00BF96BE /* MPChannelAPI.swift */,
 			);
 			path = Api;
 			sourceTree = "<group>";
@@ -504,8 +516,10 @@
 			files = (
 				E082715721967592000E8CCD /* MPTabBarChildViewController.swift in Sources */,
 				E04AA35B2198034A00A40CFB /* MPRankData.swift in Sources */,
+				E00323E9219FC87E00BF96BE /* MPChannelAPI.swift in Sources */,
 				E082714F21967541000E8CCD /* MPCollectionEmptyCell.swift in Sources */,
 				E082714B2196752F000E8CCD /* MPBoxSongViewCell.swift in Sources */,
+				E00323E5219DAA0C00BF96BE /* MPChannelViewCell.swift in Sources */,
 				E04AA3572196D9B500A40CFB /* URL.swift in Sources */,
 				E082715521967589000E8CCD /* MPRecommendViewController.swift in Sources */,
 				E02D586B219930FB00208FE2 /* MPChannelViewController.swift in Sources */,
@@ -515,6 +529,7 @@
 				E0827169219676EA000E8CCD /* MPBaseURLSession.swift in Sources */,
 				E082715F21967659000E8CCD /* MPRecommendData.swift in Sources */,
 				E05538632195B9E600F6802D /* ViewController.swift in Sources */,
+				E00323E7219DB0EA00BF96BE /* MPChannelData.swift in Sources */,
 				E0827165219676AF000E8CCD /* MPErrorEnum.swift in Sources */,
 				E04AA35D219822F800A40CFB /* MPRankAPI.swift in Sources */,
 				E04AA3592197FD3700A40CFB /* MPRankTableViewCell.swift in Sources */,
@@ -525,6 +540,7 @@
 				E05538612195B9E600F6802D /* AppDelegate.swift in Sources */,
 				E082716121967681000E8CCD /* MPImageSlideshowDelegate.swift in Sources */,
 				E082714921967526000E8CCD /* MPImageSlideshowCell.swift in Sources */,
+				E00323E3219DA9C500BF96BE /* MPChannelViewHeader.swift in Sources */,
 				E0827163219676A8000E8CCD /* MPTabBarItemEnum.swift in Sources */,
 				E082715D21967650000E8CCD /* MPBaseData.swift in Sources */,
 			);

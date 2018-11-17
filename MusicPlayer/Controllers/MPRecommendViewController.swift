@@ -175,7 +175,17 @@ class MPRecommendViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        navigationController?.pushViewController(MPChannelViewController(), animated: true)
+        let cellData = getCellData(at: indexPath)
+        if let data = cellData as? MPRecommendHomeData.SongData, let id = data.id {
+            var channelData = MPChannelData.defaultData
+            channelData.dissname = data.songListDesc
+            channelData.logo = data.picUrl
+            channelData.nick = data.songListAuthor
+            channelData.visitnum = data.accessnum
+            let vc = MPChannelViewController(id: id, data: channelData)
+            vc.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
