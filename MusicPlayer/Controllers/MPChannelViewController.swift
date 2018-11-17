@@ -16,8 +16,10 @@ class MPChannelViewController: UITableViewController {
     var api: MPChannelAPI = MPChannelAPI()
     var data: MPChannelData.Data? {
         didSet {
-            setHeaderData()
-            tableView.reloadData()
+            DispatchQueue.main.async {
+                self.setHeaderData()
+                self.tableView.reloadData()
+            }
         }
     }
     
@@ -57,9 +59,7 @@ class MPChannelViewController: UITableViewController {
                 return
             }
             
-            DispatchQueue.main.async {
-                self.data = pageData
-            }
+            self.data = pageData
         }
     }
     

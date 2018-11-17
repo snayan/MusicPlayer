@@ -11,15 +11,11 @@ import SnapKit
 
 class ViewController: UITabBarController {
     
-    let mpRecommendController = MPTabBarChildViewController(type: MPTabBarItemEnum.Recommend)
-    let mpRankController = MPTabBarChildViewController(type: MPTabBarItemEnum.Rank)
-    let mpSearchController = MPTabBarChildViewController(type: MPTabBarItemEnum.Search)
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.restorationIdentifier = "MainTabBarController"
         self.view.backgroundColor = UIColor(named: "bgColor")
-        self.viewControllers = [mpRecommendController, mpRankController, mpSearchController]
+        self.viewControllers = [MPTabBarItemEnum.Recommend, MPTabBarItemEnum.Rank, MPTabBarItemEnum.Search].map { MPTabBarChildViewController(type: $0) }
         self.selectedIndex = 0
     }
 

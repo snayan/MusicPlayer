@@ -29,7 +29,7 @@ class MPRankTableViewCell: UITableViewCell {
         }
     }
     var cellView: UIView = UIView()
-    var imageCell: UIImageView = UIImageView()
+    var imageCell: UIImageView = UIImageView(image: UIImage(named: "defaultSongPic"))
     lazy var titleCell: UILabel = {
         let label = UILabel()
         label.textColor = UIColor.black
