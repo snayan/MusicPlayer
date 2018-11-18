@@ -13,6 +13,7 @@
 		E00323E5219DAA0C00BF96BE /* MPChannelViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00323E4219DAA0C00BF96BE /* MPChannelViewCell.swift */; };
 		E00323E7219DB0EA00BF96BE /* MPChannelData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00323E6219DB0EA00BF96BE /* MPChannelData.swift */; };
 		E00323E9219FC87E00BF96BE /* MPChannelAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00323E8219FC87E00BF96BE /* MPChannelAPI.swift */; };
+		E00323EB21A014F300BF96BE /* MPPlayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E00323EA21A014F300BF96BE /* MPPlayViewController.swift */; };
 		E02D586B219930FB00208FE2 /* MPChannelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02D586A219930FB00208FE2 /* MPChannelViewController.swift */; };
 		E04AA3572196D9B500A40CFB /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04AA3562196D9B500A40CFB /* URL.swift */; };
 		E04AA3592197FD3700A40CFB /* MPRankTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04AA3582197FD3700A40CFB /* MPRankTableViewCell.swift */; };
@@ -76,6 +77,7 @@
 		E00323E4219DAA0C00BF96BE /* MPChannelViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelViewCell.swift; sourceTree = "<group>"; };
 		E00323E6219DB0EA00BF96BE /* MPChannelData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelData.swift; sourceTree = "<group>"; };
 		E00323E8219FC87E00BF96BE /* MPChannelAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelAPI.swift; sourceTree = "<group>"; };
+		E00323EA21A014F300BF96BE /* MPPlayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPPlayViewController.swift; sourceTree = "<group>"; };
 		E02D586A219930FB00208FE2 /* MPChannelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelViewController.swift; sourceTree = "<group>"; };
 		E04AA3562196D9B500A40CFB /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		E04AA3582197FD3700A40CFB /* MPRankTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPRankTableViewCell.swift; sourceTree = "<group>"; };
@@ -237,6 +239,7 @@
 				E08271582196759B000E8CCD /* MPSearchViewController.swift */,
 				E082715A219675E0000E8CCD /* MPRankViewController.swift */,
 				E02D586A219930FB00208FE2 /* MPChannelViewController.swift */,
+				E00323EA21A014F300BF96BE /* MPPlayViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -519,6 +522,7 @@
 				E00323E9219FC87E00BF96BE /* MPChannelAPI.swift in Sources */,
 				E082714F21967541000E8CCD /* MPCollectionEmptyCell.swift in Sources */,
 				E082714B2196752F000E8CCD /* MPBoxSongViewCell.swift in Sources */,
+				E00323EB21A014F300BF96BE /* MPPlayViewController.swift in Sources */,
 				E00323E5219DAA0C00BF96BE /* MPChannelViewCell.swift in Sources */,
 				E04AA3572196D9B500A40CFB /* URL.swift in Sources */,
 				E082715521967589000E8CCD /* MPRecommendViewController.swift in Sources */,
@@ -716,16 +720,21 @@
 			baseConfigurationReference = 0580977DA9B50000CE1FDD00 /* Pods-MusicPlayer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8ZVDCAVN53;
 				INFOPLIST_FILE = MusicPlayer/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = snayan.MusicPlayer;
+				PRODUCT_BUNDLE_IDENTIFIER = snayan2018.MusicPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -734,16 +743,21 @@
 			baseConfigurationReference = AE2CB32E322C0005EF68E01B /* Pods-MusicPlayer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 8ZVDCAVN53;
 				INFOPLIST_FILE = MusicPlayer/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = snayan.MusicPlayer;
+				PRODUCT_BUNDLE_IDENTIFIER = snayan2018.MusicPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

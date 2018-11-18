@@ -8,6 +8,7 @@
 
 import UIKit
 import SnapKit
+import Hero
 
 class MPChannelViewController: UITableViewController {
     
@@ -88,6 +89,10 @@ class MPChannelViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return CGFloat(62)
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        navigationController?.present(MPPlayViewController(), animated: true)
     }
 
 }

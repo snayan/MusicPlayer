@@ -37,6 +37,7 @@ enum MPTabBarItemEnum: String {
         case .Search:
             controller = MPSearchViewController()
         }
+        controller.navigationItem.title = self.rawValue
         controller.navigationItem.titleView = UIImageView(image: UIImage(named: "QQMusicWhite"), highlightedImage: nil)
         return controller
     }
