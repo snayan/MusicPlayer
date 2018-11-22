@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol MPImageSlideshowDelegate {
+protocol MPImageSlideshowDelegate: class {
     func pageWillChanged(_ currentPage: Int) -> Bool
     func pageDidChanged(_ currentPage: Int) -> Void
 }

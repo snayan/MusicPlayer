@@ -119,7 +119,7 @@ class MPImageSlideshowView: UIView {
     
     //MARK: confiurable property
     
-    var delegate: MPImageSlideshowDelegate?
+    weak var delegate: MPImageSlideshowDelegate?
     
     var data1: [UIImage] = [] {
         didSet {

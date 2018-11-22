@@ -26,6 +26,7 @@
 		E055386B2195B9E700F6802D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E05538692195B9E700F6802D /* LaunchScreen.storyboard */; };
 		E05538762195B9E700F6802D /* MusicPlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05538752195B9E700F6802D /* MusicPlayerTests.swift */; };
 		E05538812195B9E700F6802D /* MusicPlayerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05538802195B9E700F6802D /* MusicPlayerUITests.swift */; };
+		E05C81A521A26EEB00F723D9 /* MPPlayContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05C81A421A26EEB00F723D9 /* MPPlayContentView.swift */; };
 		E082714721967518000E8CCD /* MPImageSlideshowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E082714621967518000E8CCD /* MPImageSlideshowView.swift */; };
 		E082714921967526000E8CCD /* MPImageSlideshowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E082714821967526000E8CCD /* MPImageSlideshowCell.swift */; };
 		E082714B2196752F000E8CCD /* MPBoxSongViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E082714A2196752F000E8CCD /* MPBoxSongViewCell.swift */; };
@@ -96,6 +97,7 @@
 		E055387C2195B9E700F6802D /* MusicPlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MusicPlayerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E05538802195B9E700F6802D /* MusicPlayerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlayerUITests.swift; sourceTree = "<group>"; };
 		E05538822195B9E700F6802D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E05C81A421A26EEB00F723D9 /* MPPlayContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPPlayContentView.swift; sourceTree = "<group>"; };
 		E082714621967518000E8CCD /* MPImageSlideshowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPImageSlideshowView.swift; sourceTree = "<group>"; };
 		E082714821967526000E8CCD /* MPImageSlideshowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPImageSlideshowCell.swift; sourceTree = "<group>"; };
 		E082714A2196752F000E8CCD /* MPBoxSongViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPBoxSongViewCell.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				E04AA3582197FD3700A40CFB /* MPRankTableViewCell.swift */,
 				E00323E2219DA9C500BF96BE /* MPChannelViewHeader.swift */,
 				E00323E4219DAA0C00BF96BE /* MPChannelViewCell.swift */,
+				E05C81A421A26EEB00F723D9 /* MPPlayContentView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -527,6 +530,7 @@
 				E04AA3572196D9B500A40CFB /* URL.swift in Sources */,
 				E082715521967589000E8CCD /* MPRecommendViewController.swift in Sources */,
 				E02D586B219930FB00208FE2 /* MPChannelViewController.swift in Sources */,
+				E05C81A521A26EEB00F723D9 /* MPPlayContentView.swift in Sources */,
 				E082714721967518000E8CCD /* MPImageSlideshowView.swift in Sources */,
 				E082715B219675E0000E8CCD /* MPRankViewController.swift in Sources */,
 				E08271592196759B000E8CCD /* MPSearchViewController.swift in Sources */,
