@@ -7,12 +7,13 @@
 //
 
 import UIKit
+import AVFoundation
 import SnapKit
 
 class MPPlayViewController: UINavigationController {
 
-    convenience init() {
-        self.init(rootViewController: MPPlayContentViewController(data: nil))
+    convenience init(data: MPChannelData.Song?) {
+        self.init(rootViewController: MPPlayContentViewController(data: data))
         self.modalPresentationStyle = .overFullScreen
         navigationBar.isTranslucent = false
         navigationBar.barTintColor = UIColor(named: "themeColor")
@@ -23,8 +24,9 @@ class MPPlayViewController: UINavigationController {
 
 fileprivate class MPPlayContentViewController: UIViewController {
     
-    var data: String?
+    var data: MPChannelData.Song?
     var backgroundScale: Float = 1.2
+    var playerItemContext = 0
 
     lazy var song: UILabel = { createLabel(fontSize: 16, fontColor: UIColor.white) }()
     lazy var singer: UILabel = { createLabel(fontSize: 12, fontColor: UIColor.white) }()
@@ -60,11 +62,11 @@ fileprivate class MPPlayContentViewController: UIViewController {
     }()
     lazy var contentView: MPPlayContentView = { [unowned self] in MPPlayContentView(frame: self.view.bounds) }()
     
-    init(data: String?) {
+    var player: AVPlayer = AVPlayer()
+    
+    init(data: MPChannelData.Song?) {
         self.data = data
         super.init(nibName: nil, bundle: nil)
-        song.text = "歌曲名称"
-        singer.text = "歌手"
         navigationItem.titleView = titleView
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(tapDismiss))
     }
@@ -79,7 +81,83 @@ fileprivate class MPPlayContentViewController: UIViewController {
         view.addSubview(contentView)
         view.insertSubview(backgroundView, belowSubview: contentView)
         makeConstriants()
-        backgroundImage.downloaded(from: "https://p.qpic.cn/music_cover/1Fr9IFMhWDPeUzWKVEjn3QTL2eX2QziaJmaL0ZAmsvtW71ic9IDUoYzg/600?n=1", contentMode: .scaleAspectFill)
+        setup()
+        prepareForPlay(src: data?.mediaUrl)
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        // Only handle observations for the playerItemContext
+        guard context == &playerItemContext else {
+            super.observeValue(forKeyPath: keyPath,
+                               of: object,
+                               change: change,
+                               context: context)
+            return
+        }
+        
+        if keyPath == #keyPath(AVPlayerItem.status) {
+            let status: AVPlayerItemStatus
+            if let statusNumber = change?[.newKey] as? NSNumber {
+                status = AVPlayerItemStatus(rawValue: statusNumber.intValue)!
+            } else {
+                status = .unknown
+            }
+            
+            // Switch over status value
+            switch status {
+            case .readyToPlay:
+            // Player item is ready to play.
+                debugPrint(player.currentItem?.duration.value)
+                player.play()
+            case .failed:
+            // Player item failed. See error.
+                debugPrint("failed\(status.rawValue)")
+            case .unknown:
+                // Player item is not yet ready.
+                debugPrint("unknown\(status.rawValue)")
+            }
+        }
+    }
+    
+    fileprivate func setup() {
+        song.text = data?.name
+        guard let songData = data else {
+            return
+        }
+        song.text = songData.name
+        if let singerData = songData.singer, singerData.count > 0 {
+            let fisrtSinger = singerData[0]
+            singer.text = fisrtSinger.name
+            backgroundImage.downloaded(from: fisrtSinger.picture)
+            contentView.singerPicture = fisrtSinger.picture
+        }
+    }
+    
+    fileprivate func prepareForPlay(src: String?) {
+        if let validSrc = src, let url = URL(string: validSrc) {
+            let asset = AVAsset(url: url)
+            asset.loadValuesAsynchronously(forKeys: ["playable"]) {
+                var error: NSError? = nil
+                let status = asset.statusOfValue(forKey: "playable", error: &error)
+                switch status {
+                    case .loaded:
+                        if asset.isPlayable {
+                            let playerItem = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["duration"])
+                            playerItem.addObserver(self,
+                                                   forKeyPath: #keyPath(AVPlayerItem.status),
+                                                   options: [.old, .new],
+                                                   context: &self.playerItemContext)
+                            self.player.replaceCurrentItem(with: playerItem)
+                        }
+                    case .failed:
+                    // Handle error
+                        fatalError(error.debugDescription)
+                    default:
+                        // Handle all other cases
+                        debugPrint("加载中")
+                }
+            }
+        }
     }
     
     fileprivate func createLabel(fontSize size: Float, fontColor color: UIColor) -> UILabel {
@@ -97,6 +175,7 @@ fileprivate class MPPlayContentViewController: UIViewController {
         song.snp.makeConstraints{ make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview().offset(-6)
+            make.width.equalToSuperview().multipliedBy(0.6)
         }
         singer.snp.makeConstraints{ make in
             make.centerX.equalToSuperview()

@@ -55,12 +55,29 @@ class MPChannelViewController: UITableViewController {
                 return
             }
             
-            guard let pageData = data else {
+            guard var pageData = data else {
                 // toast 提示错误
                 return
             }
             
-            self.data = pageData
+            if let songList = pageData.songlist {
+                self.api.getMediaUrl(songs: songList) { data, error in
+                    
+                    guard error == nil else {
+                        // toast 提示错误
+                        return
+                    }
+                    
+                    guard let songData = data else {
+                        // toast 提示错误
+                        return
+                    }
+                    pageData.songlist = songData
+                    self.data = pageData
+                }
+            } else {
+                self.data = pageData
+            }
         }
     }
     
@@ -91,8 +108,15 @@ class MPChannelViewController: UITableViewController {
         return CGFloat(62)
     }
     
+    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if let song = data?.songlist?[indexPath.row], song.mediaUrl != nil {
+            return indexPath
+        }
+        return nil
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        navigationController?.present(MPPlayViewController(), animated: true)
+        navigationController?.present(MPPlayViewController(data: data?.songlist?[indexPath.row]), animated: true)
     }
 
 }

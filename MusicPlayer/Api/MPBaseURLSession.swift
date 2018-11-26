@@ -14,7 +14,6 @@ struct MPBaseURLSession {
     
     fileprivate static let handlerRequest: (_ handler: @escaping (_ : Data?, _: HTTPURLResponse?, _: Error?) -> Void) -> (_: Data?, _: URLResponse?, _ : Error?) -> Void = { handler in
         return { data, response, error in
-            
             guard error != nil else {
                 handler(data, response as? HTTPURLResponse, MPHttpError.Client(.AnyReason))
                 return

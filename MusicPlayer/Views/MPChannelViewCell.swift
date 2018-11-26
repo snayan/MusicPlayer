@@ -44,7 +44,10 @@ class MPChannelViewCell: UITableViewCell {
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
-        if selected {
+        if data?.mediaUrl == nil || data?.mediaUrl == "" {
+            title.textColor = UIColor(named: "disableColor")
+            subTitle.textColor = UIColor(named: "disableColor")
+        } else if selected {
             title.textColor = UIColor(named: "themeLightColor")
             subTitle.textColor = UIColor(named: "themeLightColor")
         } else {

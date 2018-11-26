@@ -22,14 +22,23 @@ struct MPChannelData: Decodable {
         var mid: String?
         var name: String?
         var title: String?
+        var picture: String? {
+            get {
+                guard let midValue = mid else {
+                    return nil
+                }
+                return "https://y.gtimg.cn/music/photo_new/T001R300x300M000\(midValue).jpg?max_age=2592000"
+            }
+        }
     }
     
     struct Song: Decodable {
         var id: Int?
+        var mid: String?
         var name: String?
         var title: String?
         var status: Int?
-        var url: String?
+        var mediaUrl: String?
         var album: Album?
         var singer: [Singer]?
     }

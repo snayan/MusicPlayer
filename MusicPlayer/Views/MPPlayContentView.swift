@@ -11,19 +11,26 @@ import SnapKit
 
 class MPPlayContentView: UIView {
     
+    var singerPicture: String? {
+        didSet {
+            songImageView.downloaded(from: singerPicture, useFallImage: UIImage(named: "defaultSongPic"))
+        }
+    }
+    
     lazy var paddingLeft: CGFloat = { frame.width * 0.08 }()
     lazy var paddingTop: CGFloat = { paddingLeft * 1.6 }()
-    lazy var songImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.backgroundColor = UIColor.red
-        return imageView
-    }()
-    lazy var songImageBackView: UIView = {
-        var view = UIView()
-        view.backgroundColor = UIColor(named: "themeLightColor")
+    lazy var songImageView: UIImageView = { [unowned self] in
+        let view = UIImageView(image: UIImage(named: "defaultSongPic"))
+        view.clipsToBounds = true
         return view
     }()
-    lazy var timeSlider: UISlider = {
+    lazy var songImageBackView: UIView = { [unowned self] in
+        var view = UIView()
+        view.backgroundColor = UIColor(named: "themeLightColor")
+        view.clipsToBounds = true
+        return view
+    }()
+    lazy var timeSlider: UISlider = { [unowned self] in
         let slider = UISlider()
         slider.minimumValue = 0
         slider.maximumValue = 100
@@ -54,8 +61,8 @@ class MPPlayContentView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        songImageBackView.layer.cornerRadius = songImageBackView.frame.width/2
-        songImageView.layer.cornerRadius = songImageView.frame.width/2
+        songImageBackView.layer.cornerRadius = songImageBackView.frame.height/2
+        songImageView.layer.cornerRadius = songImageView.frame.height/2
     }
     
     
@@ -64,11 +71,11 @@ class MPPlayContentView: UIView {
             make.top.equalToSuperview().offset(paddingTop)
             make.left.equalToSuperview().offset(paddingLeft)
             make.right.equalToSuperview().offset(-paddingLeft)
-            make.height.equalTo(songImageView.snp.width)
+            make.height.equalTo(songImageBackView.snp.width)
 
         }
         songImageView.snp.makeConstraints{ make in
-            make.edges.equalTo(songImageBackView).inset(UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
+            make.edges.equalTo(songImageBackView).inset(UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8))
         }
         timeSlider.snp.makeConstraints{ make in
             make.top.equalTo(songImageBackView.snp.bottom).offset(paddingTop)
