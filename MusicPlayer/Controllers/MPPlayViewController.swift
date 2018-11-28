@@ -12,8 +12,8 @@ import SnapKit
 
 class MPPlayViewController: UINavigationController {
 
-    convenience init(data: MPChannelData.Song?) {
-        self.init(rootViewController: MPPlayContentViewController(data: data))
+    convenience init(data: MPChannelData.Song?, autoPlay: Bool = true) {
+        self.init(rootViewController: MPPlayContentViewController(data: data, autoPlay: autoPlay))
         self.modalPresentationStyle = .overFullScreen
         navigationBar.isTranslucent = false
         navigationBar.barTintColor = UIColor(named: "themeColor")
@@ -24,9 +24,14 @@ class MPPlayViewController: UINavigationController {
 
 fileprivate class MPPlayContentViewController: UIViewController {
     
-    var data: MPChannelData.Song?
+    var autoPlay: Bool
     var backgroundScale: Float = 1.2
     var playerItemContext = 0
+    var data: MPChannelData.Song? {
+        didSet {
+            updateContentifNeed()
+        }
+    }
 
     lazy var song: UILabel = { createLabel(fontSize: 16, fontColor: UIColor.white) }()
     lazy var singer: UILabel = { createLabel(fontSize: 12, fontColor: UIColor.white) }()
@@ -62,13 +67,13 @@ fileprivate class MPPlayContentViewController: UIViewController {
     }()
     lazy var contentView: MPPlayContentView = { [unowned self] in MPPlayContentView(frame: self.view.bounds) }()
     
-    var player: AVPlayer = AVPlayer()
-    
-    init(data: MPChannelData.Song?) {
+    init(data: MPChannelData.Song?, autoPlay: Bool) {
+        self.autoPlay = autoPlay
         self.data = data
         super.init(nibName: nil, bundle: nil)
         navigationItem.titleView = titleView
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(tapDismiss))
+        PlayerManager.shared.delegate = self
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -81,46 +86,12 @@ fileprivate class MPPlayContentViewController: UIViewController {
         view.addSubview(contentView)
         view.insertSubview(backgroundView, belowSubview: contentView)
         makeConstriants()
-        setup()
-        prepareForPlay(src: data?.mediaUrl)
+        updateContentifNeed()
+        PlayerManager.shared.inset(withSong: data, autoPlay: autoPlay)
     }
+
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        // Only handle observations for the playerItemContext
-        guard context == &playerItemContext else {
-            super.observeValue(forKeyPath: keyPath,
-                               of: object,
-                               change: change,
-                               context: context)
-            return
-        }
-        
-        if keyPath == #keyPath(AVPlayerItem.status) {
-            let status: AVPlayerItemStatus
-            if let statusNumber = change?[.newKey] as? NSNumber {
-                status = AVPlayerItemStatus(rawValue: statusNumber.intValue)!
-            } else {
-                status = .unknown
-            }
-            
-            // Switch over status value
-            switch status {
-            case .readyToPlay:
-            // Player item is ready to play.
-                debugPrint(player.currentItem?.duration.value)
-                player.play()
-            case .failed:
-            // Player item failed. See error.
-                debugPrint("failed\(status.rawValue)")
-            case .unknown:
-                // Player item is not yet ready.
-                debugPrint("unknown\(status.rawValue)")
-            }
-        }
-    }
-    
-    fileprivate func setup() {
-        song.text = data?.name
+    fileprivate func updateContentifNeed() {
         guard let songData = data else {
             return
         }
@@ -130,33 +101,6 @@ fileprivate class MPPlayContentViewController: UIViewController {
             singer.text = fisrtSinger.name
             backgroundImage.downloaded(from: fisrtSinger.picture)
             contentView.singerPicture = fisrtSinger.picture
-        }
-    }
-    
-    fileprivate func prepareForPlay(src: String?) {
-        if let validSrc = src, let url = URL(string: validSrc) {
-            let asset = AVAsset(url: url)
-            asset.loadValuesAsynchronously(forKeys: ["playable"]) {
-                var error: NSError? = nil
-                let status = asset.statusOfValue(forKey: "playable", error: &error)
-                switch status {
-                    case .loaded:
-                        if asset.isPlayable {
-                            let playerItem = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["duration"])
-                            playerItem.addObserver(self,
-                                                   forKeyPath: #keyPath(AVPlayerItem.status),
-                                                   options: [.old, .new],
-                                                   context: &self.playerItemContext)
-                            self.player.replaceCurrentItem(with: playerItem)
-                        }
-                    case .failed:
-                    // Handle error
-                        fatalError(error.debugDescription)
-                    default:
-                        // Handle all other cases
-                        debugPrint("加载中")
-                }
-            }
         }
     }
     
@@ -183,7 +127,51 @@ fileprivate class MPPlayContentViewController: UIViewController {
         }
     }
     
+    fileprivate func formartTime(time: Int?) -> String {
+        guard let time = time else {
+            return "00:00"
+        }
+        let munite = time / 60
+        let second = time - munite * 60
+        let muniteString = munite < 10 ? "0\(munite)" : "\(munite)"
+        let secondString = second < 10 ? "0\(second)" : "\(second)"
+        return muniteString + ":" + secondString
+    }
+    
     @objc fileprivate func tapDismiss() {
         dismiss(animated: true, completion: nil)
+    }
+}
+
+
+extension MPPlayContentViewController: PlayerDelegate {
+    func play(currentSong song: MPChannelData.Song, totalTimeChanged totalTime: Int) {
+        DispatchQueue.main.async {
+            self.contentView.timeSlider.maximumValue = Float(totalTime)
+            self.contentView.totalSongTime.text = self.formartTime(time: totalTime)
+        }
+    }
+    
+    func play(currentSong song: MPChannelData.Song, currentTimeChaned currentTime: Int) {
+        DispatchQueue.main.async {
+            self.contentView.timeSlider.value = Float(currentTime)
+            self.contentView.currentSongTime.text = self.formartTime(time: currentTime)
+        }
+    }
+    
+    func play(cuurentSong song: MPChannelData.Song, statusChanged status: PlayerManager.Status) {
+        DispatchQueue.main.async {
+            self.contentView.playBtn.setBackgroundImage(UIImage(named: status == .playing ? "playIcon" : "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: .normal);
+        }
+    }
+    
+    func play(currentSong song: MPChannelData.Song, withOccureError error: PlayerManager.PlayError) {
+        
+    }
+    
+    func play(songChanged song: MPChannelData.Song) {
+        DispatchQueue.main.async {
+            self.data = song
+        }
     }
 }

@@ -45,6 +45,8 @@
 		E0827167219676D1000E8CCD /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0827166219676D1000E8CCD /* UIImageView.swift */; };
 		E0827169219676EA000E8CCD /* MPBaseURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0827168219676EA000E8CCD /* MPBaseURLSession.swift */; };
 		E082716B219676F3000E8CCD /* MPRecommendAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E082716A219676F3000E8CCD /* MPRecommendAPI.swift */; };
+		E0F7187C21ABA9AD00D39984 /* PlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F7187B21ABA9AD00D39984 /* PlayerManager.swift */; };
+		E0F7188021AD6C9E00D39984 /* PlayerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F7187F21AD6C9E00D39984 /* PlayerDelegate.swift */; };
 		E774275020717B9B9358F268 /* Pods_MusicPlayerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D8546A4049BA7ACD2E22DA0 /* Pods_MusicPlayerUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -116,6 +118,8 @@
 		E0827166219676D1000E8CCD /* UIImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
 		E0827168219676EA000E8CCD /* MPBaseURLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPBaseURLSession.swift; sourceTree = "<group>"; };
 		E082716A219676F3000E8CCD /* MPRecommendAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPRecommendAPI.swift; sourceTree = "<group>"; };
+		E0F7187B21ABA9AD00D39984 /* PlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerManager.swift; sourceTree = "<group>"; };
+		E0F7187F21AD6C9E00D39984 /* PlayerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDelegate.swift; sourceTree = "<group>"; };
 		F11C89F81F956B26F5F41269 /* Pods_MusicPlayerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MusicPlayerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -191,6 +195,7 @@
 				E082713F21967414000E8CCD /* Views */,
 				E05538602195B9E600F6802D /* AppDelegate.swift */,
 				E05538622195B9E600F6802D /* ViewController.swift */,
+				E0F7187B21ABA9AD00D39984 /* PlayerManager.swift */,
 				E05538642195B9E600F6802D /* Main.storyboard */,
 				E05538672195B9E700F6802D /* Assets.xcassets */,
 				E05538692195B9E700F6802D /* LaunchScreen.storyboard */,
@@ -261,6 +266,7 @@
 		E08271422196744A000E8CCD /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
+				E0F7187F21AD6C9E00D39984 /* PlayerDelegate.swift */,
 				E082716021967681000E8CCD /* MPImageSlideshowDelegate.swift */,
 			);
 			path = Delegates;
@@ -534,8 +540,10 @@
 				E082714721967518000E8CCD /* MPImageSlideshowView.swift in Sources */,
 				E082715B219675E0000E8CCD /* MPRankViewController.swift in Sources */,
 				E08271592196759B000E8CCD /* MPSearchViewController.swift in Sources */,
+				E0F7188021AD6C9E00D39984 /* PlayerDelegate.swift in Sources */,
 				E0827169219676EA000E8CCD /* MPBaseURLSession.swift in Sources */,
 				E082715F21967659000E8CCD /* MPRecommendData.swift in Sources */,
+				E0F7187C21ABA9AD00D39984 /* PlayerManager.swift in Sources */,
 				E05538632195B9E600F6802D /* ViewController.swift in Sources */,
 				E00323E7219DB0EA00BF96BE /* MPChannelData.swift in Sources */,
 				E0827165219676AF000E8CCD /* MPErrorEnum.swift in Sources */,

@@ -33,12 +33,33 @@ class MPPlayContentView: UIView {
     lazy var timeSlider: UISlider = { [unowned self] in
         let slider = UISlider()
         slider.minimumValue = 0
-        slider.maximumValue = 100
+        slider.maximumValue = 0
         slider.isContinuous = false
         slider.thumbTintColor = UIColor.clear
         slider.minimumTrackTintColor = UIColor(named: "themeColor")
         slider.maximumTrackTintColor = UIColor(named: "bgColor")
         return slider
+    }()
+    lazy var forwardBtn: UIButton = { [unowned self] in
+        let btn = UIButton(type: UIButtonType.system)
+        btn.tintColor = UIColor(named: "themeLightColor")
+        btn.setBackgroundImage(UIImage(named: "forwardIcon")?.withRenderingMode(.alwaysTemplate), for: UIControlState.normal)
+        btn.addTarget(self, action: #selector(MPPlayContentView.forward), for: .touchUpInside)
+        return btn
+    }()
+    lazy var rewardBtn: UIButton = { [unowned self] in
+        let btn = UIButton(type: UIButtonType.system)
+        btn.tintColor = UIColor(named: "themeLightColor")
+        btn.setBackgroundImage(UIImage(named: "rewindIcon")?.withRenderingMode(.alwaysTemplate), for: UIControlState.normal)
+        btn.addTarget(self, action: #selector(MPPlayContentView.rewind), for: .touchUpInside)
+        return btn
+    }()
+    lazy var playBtn: UIButton = { [unowned self] in
+        let btn = UIButton(type: UIButtonType.system)
+        btn.tintColor = UIColor(named: "themeLightColor")
+        btn.setBackgroundImage(UIImage(named: "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: UIControlState.normal)
+        btn.addTarget(self, action: #selector(MPPlayContentView.togglePlay), for: .touchUpInside)
+        return btn
     }()
     lazy var currentSongTime: UILabel = { createLabel(fontSize: 12, fontColor: timeSlider.minimumTrackTintColor) }()
     lazy var totalSongTime: UILabel = { createLabel(fontSize: 12, fontColor: timeSlider.maximumTrackTintColor) }()
@@ -50,6 +71,9 @@ class MPPlayContentView: UIView {
         addSubview(timeSlider)
         addSubview(currentSongTime)
         addSubview(totalSongTime)
+        addSubview(forwardBtn)
+        addSubview(rewardBtn)
+        addSubview(playBtn)
         makeConstraints()
         currentSongTime.text = String(timeSlider.minimumValue)
         totalSongTime.text = String(timeSlider.maximumValue)
@@ -65,6 +89,21 @@ class MPPlayContentView: UIView {
         songImageView.layer.cornerRadius = songImageView.frame.height/2
     }
     
+    @objc fileprivate func togglePlay() {
+        if PlayerManager.shared.status == .playing {
+            PlayerManager.shared.pause()
+        } else {
+            PlayerManager.shared.play()
+        }
+    }
+    
+    @objc fileprivate func forward() {
+        PlayerManager.shared.next()
+    }
+    
+    @objc fileprivate func rewind() {
+        PlayerManager.shared.previous()
+    }
     
     fileprivate func makeConstraints() {
         songImageBackView.snp.makeConstraints{ make in
@@ -88,6 +127,24 @@ class MPPlayContentView: UIView {
         totalSongTime.snp.makeConstraints{ make in
             make.right.equalTo(timeSlider)
             make.top.equalTo(currentSongTime)
+        }
+        playBtn.snp.makeConstraints{ make in
+            make.top.equalTo(timeSlider.snp.bottom).offset(paddingTop)
+            make.centerX.equalTo(timeSlider)
+            make.width.equalTo(34)
+            make.height.equalTo(38)
+        }
+        rewardBtn.snp.makeConstraints{ make in
+            make.centerY.equalTo(playBtn)
+            make.right.equalTo(playBtn.snp.left).offset(-60)
+            make.width.equalTo(34)
+            make.height.equalTo(31 * 34 / 48)
+        }
+        forwardBtn.snp.makeConstraints{ make in
+            make.centerY.equalTo(playBtn)
+            make.left.equalTo(playBtn.snp.right).offset(60)
+            make.width.equalTo(rewardBtn)
+            make.height.equalTo(rewardBtn)
         }
     }
     

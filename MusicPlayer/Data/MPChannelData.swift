@@ -32,7 +32,11 @@ struct MPChannelData: Decodable {
         }
     }
     
-    struct Song: Decodable {
+    struct Song: Decodable, Equatable {
+        static func == (lhs: MPChannelData.Song, rhs: MPChannelData.Song) -> Bool {
+            return lhs.mediaUrl == rhs.mediaUrl
+        }
+        
         var id: Int?
         var mid: String?
         var name: String?
@@ -41,6 +45,7 @@ struct MPChannelData: Decodable {
         var mediaUrl: String?
         var album: Album?
         var singer: [Singer]?
+        
     }
     
     struct Data: Decodable {
