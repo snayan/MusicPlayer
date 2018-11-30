@@ -162,6 +162,7 @@ extension MPPlayContentViewController: PlayerDelegate {
     func play(cuurentSong song: MPChannelData.Song, statusChanged status: PlayerManager.Status) {
         DispatchQueue.main.async {
             self.contentView.playBtn.setBackgroundImage(UIImage(named: status == .playing ? "playIcon" : "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: .normal);
+            status == .playing ? self.contentView.startRotateImage() : self.contentView.stopRotateImage()
         }
     }
     
@@ -174,4 +175,5 @@ extension MPPlayContentViewController: PlayerDelegate {
             self.data = song
         }
     }
+    
 }

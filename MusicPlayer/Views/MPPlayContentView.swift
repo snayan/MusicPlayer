@@ -17,16 +17,13 @@ class MPPlayContentView: UIView {
         }
     }
     
+    lazy var rotateKey: String = "rotateImage"
     lazy var paddingLeft: CGFloat = { frame.width * 0.08 }()
     lazy var paddingTop: CGFloat = { paddingLeft * 1.6 }()
     lazy var songImageView: UIImageView = { [unowned self] in
         let view = UIImageView(image: UIImage(named: "defaultSongPic"))
-        view.clipsToBounds = true
-        return view
-    }()
-    lazy var songImageBackView: UIView = { [unowned self] in
-        var view = UIView()
-        view.backgroundColor = UIColor(named: "themeLightColor")
+        view.layer.borderColor = UIColor(named: "themeLightColor")?.cgColor
+        view.layer.borderWidth = 8
         view.clipsToBounds = true
         return view
     }()
@@ -66,7 +63,6 @@ class MPPlayContentView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        addSubview(songImageBackView)
         addSubview(songImageView)
         addSubview(timeSlider)
         addSubview(currentSongTime)
@@ -85,7 +81,6 @@ class MPPlayContentView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        songImageBackView.layer.cornerRadius = songImageBackView.frame.height/2
         songImageView.layer.cornerRadius = songImageView.frame.height/2
     }
     
@@ -105,20 +100,34 @@ class MPPlayContentView: UIView {
         PlayerManager.shared.previous()
     }
     
+    func startRotateImage() {
+        if songImageView.layer.animation(forKey: rotateKey) == nil {
+            let animate = CABasicAnimation(keyPath: "transform.rotation")
+            animate.duration = 80
+            animate.repeatCount = Float.infinity
+            animate.fromValue = 0.0
+            animate.toValue = CGFloat.pi * 2
+            songImageView.layer.add(animate, forKey: rotateKey)
+        }
+    }
+    
+    func stopRotateImage() {
+        if songImageView.layer.animation(forKey: rotateKey) != nil {
+            songImageView.layer.removeAnimation(forKey: rotateKey)
+        }
+    }
+    
     fileprivate func makeConstraints() {
-        songImageBackView.snp.makeConstraints{ make in
+        songImageView.snp.makeConstraints{ make in
             make.top.equalToSuperview().offset(paddingTop)
             make.left.equalToSuperview().offset(paddingLeft)
             make.right.equalToSuperview().offset(-paddingLeft)
-            make.height.equalTo(songImageBackView.snp.width)
+            make.height.equalTo(songImageView.snp.width)
 
         }
-        songImageView.snp.makeConstraints{ make in
-            make.edges.equalTo(songImageBackView).inset(UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8))
-        }
         timeSlider.snp.makeConstraints{ make in
-            make.top.equalTo(songImageBackView.snp.bottom).offset(paddingTop)
-            make.left.right.equalTo(songImageBackView)
+            make.top.equalTo(songImageView.snp.bottom).offset(paddingTop)
+            make.left.right.equalTo(songImageView)
         }
         currentSongTime.snp.makeConstraints{ make in
             make.left.equalTo(timeSlider)
