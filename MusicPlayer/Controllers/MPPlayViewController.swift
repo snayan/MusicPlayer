@@ -127,50 +127,30 @@ fileprivate class MPPlayContentViewController: UIViewController {
         }
     }
     
-    fileprivate func formartTime(time: Int?) -> String {
-        guard let time = time else {
-            return "00:00"
-        }
-        let munite = time / 60
-        let second = time - munite * 60
-        let muniteString = munite < 10 ? "0\(munite)" : "\(munite)"
-        let secondString = second < 10 ? "0\(second)" : "\(second)"
-        return muniteString + ":" + secondString
-    }
-    
     @objc fileprivate func tapDismiss() {
         dismiss(animated: true, completion: nil)
     }
 }
 
-
 extension MPPlayContentViewController: PlayerDelegate {
-    func play(currentSong song: MPChannelData.Song, totalTimeChanged totalTime: Int) {
-        DispatchQueue.main.async {
-            self.contentView.timeSlider.maximumValue = Float(totalTime)
-            self.contentView.totalSongTime.text = self.formartTime(time: totalTime)
-        }
+    
+    func play(currentSong song: MPChannelData.Song?, totalTimeChanged totalTime: CMTime?) {
+        self.contentView.play(currentSong: song, totalTimeChanged: totalTime)
     }
     
-    func play(currentSong song: MPChannelData.Song, currentTimeChaned currentTime: Int) {
-        DispatchQueue.main.async {
-            self.contentView.timeSlider.value = Float(currentTime)
-            self.contentView.currentSongTime.text = self.formartTime(time: currentTime)
-        }
+    func play(currentSong song: MPChannelData.Song, currentTimeChanged currentTime: CMTime) {
+        self.contentView.play(currentSong: song, currentTimeChanged: currentTime)
     }
     
     func play(cuurentSong song: MPChannelData.Song, statusChanged status: PlayerManager.Status) {
-        DispatchQueue.main.async {
-            self.contentView.playBtn.setBackgroundImage(UIImage(named: status == .playing ? "playIcon" : "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: .normal);
-            status == .playing ? self.contentView.startRotateImage() : self.contentView.stopRotateImage()
-        }
+        self.contentView.play(cuurentSong: song, statusChanged: status)
     }
     
-    func play(currentSong song: MPChannelData.Song, withOccureError error: PlayerManager.PlayError) {
-        
+    func play(currentSong song: MPChannelData.Song?, withOccureError error: PlayerManager.PlayError) {
+        debugPrint(error)
     }
     
-    func play(songChanged song: MPChannelData.Song) {
+    func play(songChanged song: MPChannelData.Song?) {
         DispatchQueue.main.async {
             self.data = song
         }

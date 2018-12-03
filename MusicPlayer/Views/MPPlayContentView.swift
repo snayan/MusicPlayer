@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 import SnapKit
 
 class MPPlayContentView: UIView {
@@ -16,14 +17,17 @@ class MPPlayContentView: UIView {
             songImageView.downloaded(from: singerPicture, useFallImage: UIImage(named: "defaultSongPic"))
         }
     }
-    
-    lazy var rotateKey: String = "rotateImage"
+    private var isSeeking: Bool = false
+    private var animator: UIViewPropertyAnimator?
     lazy var paddingLeft: CGFloat = { frame.width * 0.08 }()
     lazy var paddingTop: CGFloat = { paddingLeft * 1.6 }()
+    lazy var contentWidth: CGFloat = { frame.width - paddingLeft * 2 }()
     lazy var songImageView: UIImageView = { [unowned self] in
         let view = UIImageView(image: UIImage(named: "defaultSongPic"))
-        view.layer.borderColor = UIColor(named: "themeLightColor")?.cgColor
+        view.frame = CGRect(x: paddingLeft, y: paddingTop, width: contentWidth, height: contentWidth)
+        view.layer.cornerRadius = contentWidth / 2
         view.layer.borderWidth = 8
+        view.layer.borderColor = UIColor(named: "themeLightColor")?.cgColor
         view.clipsToBounds = true
         return view
     }()
@@ -33,12 +37,19 @@ class MPPlayContentView: UIView {
         slider.maximumValue = 0
         slider.isContinuous = false
         slider.thumbTintColor = UIColor.clear
+        slider.isUserInteractionEnabled = true
         slider.minimumTrackTintColor = UIColor(named: "themeColor")
         slider.maximumTrackTintColor = UIColor(named: "bgColor")
+        slider.frame = CGRect(x: paddingLeft, y: songImageView.frame.maxY + paddingTop, width: contentWidth, height: 10)
+        slider.addTarget(self, action: #selector(MPPlayContentView.seekSongTime), for: UIControlEvents.valueChanged)
+        slider.addTarget(self, action: #selector(MPPlayContentView.startSeekSong), for: UIControlEvents.touchDragInside)
         return slider
     }()
     lazy var forwardBtn: UIButton = { [unowned self] in
         let btn = UIButton(type: UIButtonType.system)
+        let width: CGFloat = 34
+        let height: CGFloat = 31 * 34 / 48
+        btn.frame = CGRect(x: playBtn.frame.maxX + 60, y: playBtn.frame.minY + playBtn.frame.height/2 - height/2, width: 34, height: 31 * 34 / 48)
         btn.tintColor = UIColor(named: "themeLightColor")
         btn.setBackgroundImage(UIImage(named: "forwardIcon")?.withRenderingMode(.alwaysTemplate), for: UIControlState.normal)
         btn.addTarget(self, action: #selector(MPPlayContentView.forward), for: .touchUpInside)
@@ -46,6 +57,9 @@ class MPPlayContentView: UIView {
     }()
     lazy var rewardBtn: UIButton = { [unowned self] in
         let btn = UIButton(type: UIButtonType.system)
+        let width: CGFloat = 34
+        let height: CGFloat = 31 * 34 / 48
+        btn.frame = CGRect(x: playBtn.frame.minX - width - 60, y: playBtn.frame.minY + playBtn.frame.height/2 - height/2, width: 34, height: 31 * 34 / 48)
         btn.tintColor = UIColor(named: "themeLightColor")
         btn.setBackgroundImage(UIImage(named: "rewindIcon")?.withRenderingMode(.alwaysTemplate), for: UIControlState.normal)
         btn.addTarget(self, action: #selector(MPPlayContentView.rewind), for: .touchUpInside)
@@ -53,13 +67,25 @@ class MPPlayContentView: UIView {
     }()
     lazy var playBtn: UIButton = { [unowned self] in
         let btn = UIButton(type: UIButtonType.system)
+        btn.frame = CGRect(x: (frame.width - 34 ) / 2, y: currentSongTime.frame.maxY + paddingTop - 19, width: 34, height: 38)
         btn.tintColor = UIColor(named: "themeLightColor")
         btn.setBackgroundImage(UIImage(named: "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: UIControlState.normal)
         btn.addTarget(self, action: #selector(MPPlayContentView.togglePlay), for: .touchUpInside)
         return btn
     }()
-    lazy var currentSongTime: UILabel = { createLabel(fontSize: 12, fontColor: timeSlider.minimumTrackTintColor) }()
-    lazy var totalSongTime: UILabel = { createLabel(fontSize: 12, fontColor: timeSlider.maximumTrackTintColor) }()
+    lazy var currentSongTime: UILabel = {
+        let label = createLabel(fontSize: 12, fontColor: timeSlider.minimumTrackTintColor)
+        label.frame = CGRect(x: paddingLeft, y: timeSlider.frame.maxY + 10, width: contentWidth/2, height: 20)
+        label.text = "00:00"
+        return label
+    }()
+    lazy var totalSongTime: UILabel = {
+        let label = createLabel(fontSize: 12, fontColor: timeSlider.maximumTrackTintColor)
+        label.frame = CGRect(x: currentSongTime.frame.maxX, y: currentSongTime.frame.minY, width: contentWidth/2, height: 20)
+        label.textAlignment = .right
+        label.text = "00:00"
+        return label
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -70,18 +96,10 @@ class MPPlayContentView: UIView {
         addSubview(forwardBtn)
         addSubview(rewardBtn)
         addSubview(playBtn)
-        makeConstraints()
-        currentSongTime.text = String(timeSlider.minimumValue)
-        totalSongTime.text = String(timeSlider.maximumValue)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        songImageView.layer.cornerRadius = songImageView.frame.height/2
     }
     
     @objc fileprivate func togglePlay() {
@@ -100,70 +118,94 @@ class MPPlayContentView: UIView {
         PlayerManager.shared.previous()
     }
     
+    @objc fileprivate func seekSongTime() {
+        PlayerManager.shared.seek(to: timeSlider.value, completionHandler: {
+            [unowned self] success in
+            self.isSeeking = !success
+        })
+    }
+    
+    @objc fileprivate func startSeekSong() {
+        self.isSeeking = true
+        self.currentSongTime.text = self.formartTime(time: timeSlider.value)
+    }
+    
     func startRotateImage() {
-        if songImageView.layer.animation(forKey: rotateKey) == nil {
-            let animate = CABasicAnimation(keyPath: "transform.rotation")
-            animate.duration = 80
-            animate.repeatCount = Float.infinity
-            animate.fromValue = 0.0
-            animate.toValue = CGFloat.pi * 2
-            songImageView.layer.add(animate, forKey: rotateKey)
+        if animator == nil {
+            animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 40, delay: 0, options: .curveLinear, animations: {
+                self.songImageView.transform = self.songImageView.transform.rotated(by: CGFloat.pi)
+            }, completion: { finalPosition in
+                self.animator = nil
+                self.startRotateImage()
+            })
+        } else {
+            animator!.startAnimation()
         }
+        
     }
     
     func stopRotateImage() {
-        if songImageView.layer.animation(forKey: rotateKey) != nil {
-            songImageView.layer.removeAnimation(forKey: rotateKey)
-        }
+        animator?.pauseAnimation()
     }
     
-    fileprivate func makeConstraints() {
-        songImageView.snp.makeConstraints{ make in
-            make.top.equalToSuperview().offset(paddingTop)
-            make.left.equalToSuperview().offset(paddingLeft)
-            make.right.equalToSuperview().offset(-paddingLeft)
-            make.height.equalTo(songImageView.snp.width)
-
-        }
-        timeSlider.snp.makeConstraints{ make in
-            make.top.equalTo(songImageView.snp.bottom).offset(paddingTop)
-            make.left.right.equalTo(songImageView)
-        }
-        currentSongTime.snp.makeConstraints{ make in
-            make.left.equalTo(timeSlider)
-            make.top.equalTo(timeSlider.snp.bottom).offset(0)
-        }
-        totalSongTime.snp.makeConstraints{ make in
-            make.right.equalTo(timeSlider)
-            make.top.equalTo(currentSongTime)
-        }
-        playBtn.snp.makeConstraints{ make in
-            make.top.equalTo(timeSlider.snp.bottom).offset(paddingTop)
-            make.centerX.equalTo(timeSlider)
-            make.width.equalTo(34)
-            make.height.equalTo(38)
-        }
-        rewardBtn.snp.makeConstraints{ make in
-            make.centerY.equalTo(playBtn)
-            make.right.equalTo(playBtn.snp.left).offset(-60)
-            make.width.equalTo(34)
-            make.height.equalTo(31 * 34 / 48)
-        }
-        forwardBtn.snp.makeConstraints{ make in
-            make.centerY.equalTo(playBtn)
-            make.left.equalTo(playBtn.snp.right).offset(60)
-            make.width.equalTo(rewardBtn)
-            make.height.equalTo(rewardBtn)
-        }
+    fileprivate func angleToRadian(angle: Int) -> CGFloat {
+        return CGFloat.pi * CGFloat((angle % 360)) / 180
     }
+    
     
     fileprivate func createLabel(fontSize size: Float, fontColor color: UIColor?) -> UILabel {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: CGFloat(size))
         label.textColor = color
         label.numberOfLines = 1
+        label.bounds = CGRect(x: 0, y: 0, width: 40, height: 20)
         label.sizeToFit()
         return label
+    }
+    
+    fileprivate func timeToFloat(time: CMTime) -> Float {
+        return Float(CMTimeGetSeconds(time))
+    }
+    
+    fileprivate func formartTime(time: Float?) -> String {
+        guard let time = time else {
+            return "00:00"
+        }
+        let intTime = Int(time)
+        let munite = intTime / 60
+        let second = intTime - munite * 60
+        let muniteString = munite < 10 ? "0\(munite)" : "\(munite)"
+        let secondString = second < 10 ? "0\(second)" : "\(second)"
+        return muniteString + ":" + secondString
+    }
+    
+}
+
+extension MPPlayContentView: PlayerDelegate {
+    
+    func play(currentSong song: MPChannelData.Song?, totalTimeChanged totalTime: CMTime?) {
+        DispatchQueue.main.async {
+            let maximumValue: Float = totalTime == nil ? 0 : self.timeToFloat(time: totalTime!)
+            self.timeSlider.maximumValue = maximumValue
+            self.totalSongTime.text = self.formartTime(time: maximumValue)
+        }
+    }
+    
+    func play(currentSong song: MPChannelData.Song, currentTimeChanged currentTime: CMTime) {
+        DispatchQueue.main.async {
+            if !self.isSeeking {
+                let value = self.timeToFloat(time: currentTime)
+                self.currentSongTime.text = self.formartTime(time: value)
+                self.timeSlider.value = value
+            }
+        }
+    }
+    
+    func play(cuurentSong song: MPChannelData.Song, statusChanged status: PlayerManager.Status) {
+        DispatchQueue.main.async {
+            self.playBtn.setBackgroundImage(UIImage(named: status == .playing ? "playIcon" : "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: .normal);
+            status == .playing ? self.startRotateImage() : self.stopRotateImage()
+        }
     }
     
 }

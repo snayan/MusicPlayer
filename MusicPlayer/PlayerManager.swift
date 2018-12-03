@@ -17,30 +17,16 @@ class PlayerManager {
     }
     
     enum PlayError: Error {
+        case invalidIndex
         case notFoundAsset
         case canNotPlayable
         case loadFailed
     }
     
-    static let shared = PlayerManager()
-    
     internal weak var delegate: PlayerDelegate?
     
     private(set) var player: AVQueuePlayer!
-    private(set) var assets: [MPChannelData.Song] {
-        didSet {
-//            let items: [AVAsset] = assets.map() { src in
-//                if let asset = cache[src] {
-//                    return asset
-//                }
-//                return AVAsset(url: URL(string: src)!)
-//            }
-//            player = AVQueuePlayer(items: items.map{ AVPlayerItem(asset: $0) })
-//            if status == .playing {
-//                play(completionHandler: handler)
-//            }
-        }
-    }
+    private(set) var assets: [MPChannelData.Song]
     private(set) var currentIndex: Int?
     private(set) var status: Status {
         didSet {
@@ -50,16 +36,48 @@ class PlayerManager {
                 playMedia()
                 player.play()
             }
+            if status == .playing {
+                addTimeObserver()
+            } else {
+                clearTimeObserver()
+            }
             delegate?.play(cuurentSong: assets[currentIndex!], statusChanged: status)
+            
+        }
+    }
+    var currentSong: MPChannelData.Song? {
+        get {
+            guard let index = currentIndex else {
+                return nil
+            }
+            return assets[index]
         }
     }
 
     private var cache: [String: AVAsset] = [:]
-    private var interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    private var interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(1000))
     private var timeObserverToken: Any?
-    private var totalTime: Int? {
+    private var endObserverToken: Any?
+    private var totalTime: CMTime? {
         didSet {
-            self.delegate?.play(currentSong: assets[currentIndex ?? 0], totalTimeChanged: totalTime ?? 0)
+            self.delegate?.play(currentSong: currentSong, totalTimeChanged: totalTime)
+            if let endObserverToken = self.endObserverToken {
+                player.removeTimeObserver(endObserverToken)
+            }
+            if let totalTime = totalTime {
+                endObserverToken = player.addBoundaryTimeObserver(forTimes: [NSValue(time:totalTime)], queue: DispatchQueue.main, using: {
+                    [unowned self] in
+                    if self.delegate?.play(currentSong: self.currentSong!, playNextSongAtItemEnd: self.currentIndex!) ?? false {
+                        // todo: 不删除当前item时，循环播放当前一首时，会出现bug，原因待查
+                        self.player.remove(self.player.currentItem!)
+                        self.next()
+                    } else {
+                        self.status = .sleep
+                    }
+                })
+            } else {
+                status = .sleep
+            }
         }
     }
     
@@ -67,15 +85,14 @@ class PlayerManager {
         status = .sleep
         assets = []
         player = AVQueuePlayer(items: [])
-        timeObserverToken = player.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: {
-            [unowned self] time in
-            self.playHandler(currentTime: Int(CMTimeGetSeconds(time)))
-        })
     }
     
     deinit {
         if timeObserverToken != nil {
             player.removeTimeObserver(timeObserverToken!)
+        }
+        if let endObserverToken = self.endObserverToken {
+            player.removeTimeObserver(endObserverToken)
         }
         player = nil
         for (key, _) in cache {
@@ -94,7 +111,6 @@ class PlayerManager {
         if autoPlay {
             assets.insert(song, at: 0)
             currentIndex = 0
-            playMedia()
             status = .playing
         } else {
             assets.append(song)
@@ -135,6 +151,10 @@ class PlayerManager {
         }
     }
     
+    func next(withPlay: Bool) {
+        
+    }
+    
     func previous() {
         if currentIndex == nil {
             currentIndex = 0
@@ -147,11 +167,36 @@ class PlayerManager {
         }
     }
     
+    func seek(to time: Float, completionHandler handler: @escaping (_: Bool) -> Void) {
+        let time = CMTime(seconds: Double(time), preferredTimescale: 1000)
+        player.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: handler)
+    }
+    
+    func addTimeObserver() {
+        if timeObserverToken == nil {
+            timeObserverToken = player.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: {
+                [unowned self] time in
+                self.playHandler(currentTime: time)
+            })
+        }
+    }
+    
+    func clearTimeObserver() {
+        if timeObserverToken != nil {
+            player.removeTimeObserver(timeObserverToken!)
+            timeObserverToken = nil
+        }
+    }
+    
     private func playMedia() {
-        let current = currentIndex ?? 0
-        guard let url = assets[current].mediaUrl, let asset = cache[url] else {
+        guard let index = currentIndex else {
             status = .sleep
-            delegate?.play(currentSong: assets[current], withOccureError: PlayError.notFoundAsset)
+            delegate?.play(currentSong: nil, withOccureError: PlayError.invalidIndex)
+            return
+        }
+        guard let url = assets[index].mediaUrl, let asset = cache[url] else {
+            status = .sleep
+            delegate?.play(currentSong: currentSong!, withOccureError: PlayError.notFoundAsset)
             return
         }
         let requiredFileds: [String] = ["playable", "duration"]
@@ -161,13 +206,13 @@ class PlayerManager {
                 let status = asset.statusOfValue(forKey: filed, error: &error)
                 if status == AVKeyValueStatus.failed {
                     self.status = .sleep
-                    self.delegate?.play(currentSong: self.assets[current], withOccureError: PlayError.loadFailed)
+                    self.delegate?.play(currentSong: self.currentSong, withOccureError: PlayError.loadFailed)
                     return
                 }
             }
             if !asset.isPlayable {
                 self.status = .sleep
-                self.delegate?.play(currentSong: self.assets[current], withOccureError: PlayError.canNotPlayable)
+                self.delegate?.play(currentSong: self.currentSong, withOccureError: PlayError.canNotPlayable)
                 return
             }
             let playerItem = AVPlayerItem(asset: asset)
@@ -178,18 +223,19 @@ class PlayerManager {
                     self.player.advanceToNextItem()
                 }
             }
-            self.totalTime = Int(CMTimeGetSeconds(asset.duration))
+            self.totalTime = asset.duration
         }
     }
     
-    private func playHandler(currentTime: Int) {
-        if let delegate = delegate, let currentIndex = currentIndex {
-            if currentTime == totalTime, currentIndex == assets.count - 1, delegate.play(autoPlayFirstSongWhenLastEnd: assets[currentIndex]) {
-                next()
-            } else if currentTime == totalTime, delegate.play(currentSong: assets[currentIndex], autoPlayNextSongWhenTimeEnd: currentTime) {
-                next()
-            }
-            delegate.play(currentSong: assets[currentIndex], currentTimeChaned: currentTime)
+    private func playHandler(currentTime: CMTime) {
+        if let currentSong = currentSong {
+            delegate?.play(currentSong: currentSong, currentTimeChanged: currentTime)
         }
     }
+}
+
+
+extension PlayerManager {
+    static let shared = PlayerManager()
+    static let songChangedNotification = Notification.Name("PlayManager.songChanged")
 }
