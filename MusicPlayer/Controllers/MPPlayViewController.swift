@@ -87,7 +87,11 @@ fileprivate class MPPlayContentViewController: UIViewController {
         view.insertSubview(backgroundView, belowSubview: contentView)
         makeConstriants()
         updateContentifNeed()
-        PlayerManager.shared.inset(withSong: data, autoPlay: autoPlay)
+        if let data = data, PlayerManager.shared.currentSong != data {
+            PlayerManager.shared.play(withSong: data)
+        } else {
+            restorePlayingInfo()
+        }
     }
 
     
@@ -102,6 +106,16 @@ fileprivate class MPPlayContentViewController: UIViewController {
             backgroundImage.downloaded(from: fisrtSinger.picture)
             contentView.singerPicture = fisrtSinger.picture
         }
+    }
+    
+    fileprivate func restorePlayingInfo() {
+        let status = PlayerManager.shared.status
+        status == .playing ? contentView.startRotateImage() : contentView.stopRotateImage()
+        contentView.playBtn.setBackgroundImage(UIImage(named: status == .playing ? "playIcon" : "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: .normal);
+        contentView.timeSlider.maximumValue = contentView.timeToFloat(time: PlayerManager.shared.totalTime)
+        contentView.timeSlider.value = contentView.timeToFloat(time: PlayerManager.shared.player.currentTime())
+        contentView.currentSongTime.text =  contentView.formartTime(time: contentView.timeSlider.value)
+        contentView.totalSongTime.text = contentView.formartTime(time: contentView.timeToFloat(time: PlayerManager.shared.totalTime))
     }
     
     fileprivate func createLabel(fontSize size: Float, fontColor color: UIColor) -> UILabel {

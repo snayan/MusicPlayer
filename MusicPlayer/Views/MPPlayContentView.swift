@@ -148,6 +148,25 @@ class MPPlayContentView: UIView {
         animator?.pauseAnimation()
     }
     
+    func timeToFloat(time: CMTime?) -> Float {
+        guard let time = time else {
+            return 0
+        }
+        return Float(CMTimeGetSeconds(time))
+    }
+    
+    func formartTime(time: Float?) -> String {
+        guard let time = time else {
+            return "00:00"
+        }
+        let intTime = Int(time)
+        let munite = intTime / 60
+        let second = intTime - munite * 60
+        let muniteString = munite < 10 ? "0\(munite)" : "\(munite)"
+        let secondString = second < 10 ? "0\(second)" : "\(second)"
+        return muniteString + ":" + secondString
+    }
+    
     fileprivate func angleToRadian(angle: Int) -> CGFloat {
         return CGFloat.pi * CGFloat((angle % 360)) / 180
     }
@@ -161,22 +180,6 @@ class MPPlayContentView: UIView {
         label.bounds = CGRect(x: 0, y: 0, width: 40, height: 20)
         label.sizeToFit()
         return label
-    }
-    
-    fileprivate func timeToFloat(time: CMTime) -> Float {
-        return Float(CMTimeGetSeconds(time))
-    }
-    
-    fileprivate func formartTime(time: Float?) -> String {
-        guard let time = time else {
-            return "00:00"
-        }
-        let intTime = Int(time)
-        let munite = intTime / 60
-        let second = intTime - munite * 60
-        let muniteString = munite < 10 ? "0\(munite)" : "\(munite)"
-        let secondString = second < 10 ? "0\(second)" : "\(second)"
-        return muniteString + ":" + secondString
     }
     
 }
