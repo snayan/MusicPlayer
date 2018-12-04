@@ -95,6 +95,14 @@ class PlayerManager {
         didSet {
             if status == .playing {
                 addTimeObserver()
+                if !hasActive {
+                    do {
+                        try AVAudioSession.sharedInstance().setActive(true)
+                        hasActive = true
+                    } catch {
+                        hasActive = false
+                    }
+                }
             } else {
                 clearTimeObserver()
             }
@@ -110,6 +118,7 @@ class PlayerManager {
         }
     }
     
+    private var hasActive: Bool = false
     private var cache: [String: AVAsset] = [:]
     private var interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(1000))
     private var timeObserverToken: Any?
@@ -259,6 +268,7 @@ class PlayerManager {
             self.player.replaceCurrentItem(with: AVPlayerItem(asset: asset))
             self.totalTime = asset.duration
             if self.status == .playing {
+                debugPrint(self.player.rate)
                 self.player.play()
             }
         }
