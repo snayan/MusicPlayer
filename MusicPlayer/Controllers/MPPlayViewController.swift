@@ -152,11 +152,11 @@ extension MPPlayContentViewController: PlayerDelegate {
         self.contentView.play(currentSong: song, totalTimeChanged: totalTime)
     }
     
-    func play(currentSong song: MPChannelData.Song, currentTimeChanged currentTime: CMTime) {
+    func play(currentSong song: MPChannelData.Song?, currentTimeChanged currentTime: CMTime) {
         self.contentView.play(currentSong: song, currentTimeChanged: currentTime)
     }
     
-    func play(cuurentSong song: MPChannelData.Song, statusChanged status: PlayerManager.Status) {
+    func play(cuurentSong song: MPChannelData.Song?, statusChanged status: PlayerManager.Status) {
         self.contentView.play(cuurentSong: song, statusChanged: status)
     }
     

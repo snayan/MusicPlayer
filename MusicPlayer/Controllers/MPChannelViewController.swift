@@ -116,7 +116,16 @@ class MPChannelViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        navigationController?.present(MPPlayViewController(data: data?.songlist?[indexPath.row]), animated: true)
+        let currentIndex = indexPath.row
+        if let songs = data?.songlist {
+            for i in (currentIndex + 1) ..< songs.count {
+                PlayerManager.shared.inset(withSong: songs[i], atHead: false)
+            }
+            for i in 0 ... currentIndex {
+                PlayerManager.shared.inset(withSong: songs[i], atHead: false)
+            }
+        }
+        navigationController?.present(MPPlayViewController(data: data?.songlist?[currentIndex]), animated: true)
     }
 
 }

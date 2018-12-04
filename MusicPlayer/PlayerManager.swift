@@ -9,25 +9,88 @@
 import Foundation
 import AVFoundation
 
+typealias Song = MPChannelData.Song
+
+
+struct SongQueue {
+    var list: [Song]
+    
+    init(list: [Song]) {
+        self.list = list
+    }
+    
+    init(song: Song) {
+        self.init(list: [song])
+    }
+    
+    init() {
+       self.init(list: [])
+    }
+    
+    mutating func getNextSong() -> Song? {
+        let song = popSong()
+        appendSong(song)
+        return song
+    }
+    
+    mutating func getNextSong(withPrevious: Bool) -> Song? {
+        if !withPrevious {
+            return getNextSong()
+        }
+        guard list.count > 0 else {
+            return nil
+        }
+        guard list.count > 1 else {
+            return list[0]
+        }
+        
+        unshiftSong(list.removeLast())
+        unshiftSong(list.removeLast())
+        
+        return getNextSong()
+    }
+    
+    mutating func popSong() -> Song? {
+        return list.removeFirst()
+    }
+    
+    mutating func appendSong(_ song: Song?) -> Void {
+        guard let song = song else {
+            return
+        }
+        list.append(song)
+    }
+    
+    mutating func unshiftSong(_ song: Song?) -> Void {
+        guard let song = song else {
+            return
+        }
+        list.insert(song, at: 0)
+    }
+    
+    mutating func clearList(by song: Song) -> Void {
+        list.removeAll(where: { $0 == song })
+    }
+    
+    mutating func clearList() -> Void {
+        list.removeAll()
+    }
+}
+
 class PlayerManager {
     
-    enum Status {
-        case sleep
-        case playing
-    }
-    
-    enum PlayError: Error {
-        case invalidIndex
-        case notFoundAsset
-        case canNotPlayable
-        case loadFailed
-    }
-    
+    internal var autoPlayNextAtSongEnd: Bool
     internal weak var delegate: PlayerDelegate?
     
-    private(set) var player: AVPlayer!
-    private(set) var assets: [MPChannelData.Song]
-    private(set) var currentIndex: Int?
+    private(set) var player: AVPlayer
+    private(set) var queue: SongQueue
+    private(set) var currentSong: MPChannelData.Song? {
+        didSet {
+            delegate?.play(songChanged: currentSong)
+            resetPlayingSongState()
+            prepareMedia()
+        }
+    }
     private(set) var status: Status {
         didSet {
             if status == .playing {
@@ -35,38 +98,18 @@ class PlayerManager {
             } else {
                 clearTimeObserver()
             }
-            delegate?.play(cuurentSong: assets[currentIndex!], statusChanged: status)
+            delegate?.play(cuurentSong: currentSong, statusChanged: status)
             
         }
     }
     private(set) var totalTime: CMTime? {
         didSet {
             self.delegate?.play(currentSong: currentSong, totalTimeChanged: totalTime)
-            if let endObserverToken = self.endObserverToken {
-                player.removeTimeObserver(endObserverToken)
-                self.endObserverToken = nil
-            }
-            if let totalTime = totalTime, totalTime > kCMTimeZero {
-                endObserverToken = player.addBoundaryTimeObserver(forTimes: [NSValue(time:totalTime)], queue: DispatchQueue.main, using: {
-                    [unowned self] in
-                    if self.delegate?.play(currentSong: self.currentSong!, playNextSongAtItemEnd: self.currentIndex!) ?? false {
-                        self.next()
-                    } else {
-                        self.pause()
-                    }
-                })
-            }
+            self.clearEndObserver()
+            self.addEndObserver()
         }
     }
-    var currentSong: MPChannelData.Song? {
-        get {
-            guard let index = currentIndex else {
-                return nil
-            }
-            return assets[index]
-        }
-    }
-
+    
     private var cache: [String: AVAsset] = [:]
     private var interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(1000))
     private var timeObserverToken: Any?
@@ -74,21 +117,22 @@ class PlayerManager {
     
     init() {
         status = .sleep
-        assets = []
+        autoPlayNextAtSongEnd = true
         player = AVPlayer()
+        queue = SongQueue()
     }
     
     deinit {
-        if timeObserverToken != nil {
-            player.removeTimeObserver(timeObserverToken!)
-        }
-        if let endObserverToken = self.endObserverToken {
-            player.removeTimeObserver(endObserverToken)
-        }
-        player = nil
+        clearTimeObserver()
+        clearEndObserver()
         for (key, _) in cache {
             cache[key] = nil
         }
+        queue.clearList()
+    }
+    
+    func clearAssets() {
+        queue.clearList()
     }
     
     func inset(withSong song: MPChannelData.Song?, atHead: Bool = true) {
@@ -100,31 +144,31 @@ class PlayerManager {
         }
         remove(withSong: song)
         if atHead {
-            assets.insert(song, at: 0)
+            queue.unshiftSong(song)
         } else {
-            assets.append(song)
+            queue.appendSong(song)
         }
     }
     
     func remove(withSong song : MPChannelData.Song) {
-        assets.removeAll(where: { $0 == song })
+        queue.clearList(by: song)
     }
     
     func play(withSong song: MPChannelData.Song) {
         inset(withSong: song)
-        currentIndex = 0
-        playMedia()
+        currentSong = queue.getNextSong()
+        status = .playing
     }
     
     func play() {
         guard status == .sleep else {
             return
         }
-        if player.currentItem != nil {
+        status = .playing
+        if currentSong != nil {
             player.play()
-            status = .playing
         } else {
-            playMedia()
+            currentSong = queue.getNextSong()
         }
     }
     
@@ -137,33 +181,11 @@ class PlayerManager {
     }
     
     func next() {
-        if currentIndex == nil {
-            currentIndex = 0
-        } else {
-            currentIndex = (currentIndex! + 1) % assets.count
-        }
-        resetPlayingSongState()
-        if status == .playing {
-            playMedia()
-        }
-        if let delegate = delegate, let currentIndex = currentIndex {
-            delegate.play(songChanged: assets[currentIndex])
-        }
+        currentSong = queue.getNextSong()
     }
     
     func previous() {
-        if currentIndex == nil {
-            currentIndex = 0
-        } else {
-            currentIndex = (currentIndex! - 1 + assets.count) % assets.count
-        }
-        resetPlayingSongState()
-        if status == .playing {
-            playMedia()
-        }
-        if let delegate = delegate, let currentIndex = currentIndex {
-            delegate.play(songChanged: assets[currentIndex])
-        }
+        currentSong = queue.getNextSong(withPrevious: true)
     }
     
     func seek(to time: Float, completionHandler handler: @escaping (_: Bool) -> Void) {
@@ -171,7 +193,7 @@ class PlayerManager {
         player.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: handler)
     }
     
-    func addTimeObserver() {
+    private func addTimeObserver() {
         if timeObserverToken == nil {
             timeObserverToken = player.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: {
                 [unowned self] time in
@@ -180,22 +202,42 @@ class PlayerManager {
         }
     }
     
-    func clearTimeObserver() {
-        if timeObserverToken != nil {
-            player.removeTimeObserver(timeObserverToken!)
-            timeObserverToken = nil
+    private func clearTimeObserver() {
+        if let timeObserverToken = timeObserverToken {
+            player.removeTimeObserver(timeObserverToken)
+            self.timeObserverToken = nil
         }
     }
     
-    private func playMedia() {
-        guard let index = currentIndex else {
+    private func addEndObserver() {
+        if let totalTime = totalTime, totalTime > kCMTimeZero, endObserverToken == nil {
+            endObserverToken = player.addBoundaryTimeObserver(forTimes: [NSValue(time:totalTime)], queue: DispatchQueue.main, using: {
+                [unowned self] in
+                if self.autoPlayNextAtSongEnd {
+                    self.next()
+                } else {
+                    self.pause()
+                }
+            })
+        }
+    }
+    
+    private func clearEndObserver() {
+        if let endObserverToken = endObserverToken {
+            player.removeTimeObserver(endObserverToken)
+            self.endObserverToken = nil
+        }
+    }
+    
+    private func prepareMedia() {
+        guard let currentSong = currentSong else {
             status = .sleep
-            delegate?.play(currentSong: nil, withOccureError: PlayError.invalidIndex)
+            delegate?.play(currentSong: nil, withOccureError: PlayError.notFoundSong)
             return
         }
-        guard let url = assets[index].mediaUrl, let asset = cache[url] else {
+        guard let url = currentSong.mediaUrl, let asset = cache[url] else {
             status = .sleep
-            delegate?.play(currentSong: currentSong!, withOccureError: PlayError.notFoundAsset)
+            delegate?.play(currentSong: currentSong, withOccureError: PlayError.notFoundAsset)
             return
         }
         let requiredFileds: [String] = ["playable", "duration"]
@@ -216,8 +258,9 @@ class PlayerManager {
             }
             self.player.replaceCurrentItem(with: AVPlayerItem(asset: asset))
             self.totalTime = asset.duration
-            self.player.play()
-            self.status = .playing
+            if self.status == .playing {
+                self.player.play()
+            }
         }
     }
     
@@ -236,5 +279,20 @@ class PlayerManager {
 
 
 extension PlayerManager {
+    
+    enum Status {
+        case sleep
+        case playing
+    }
+    
+    enum PlayError: Error {
+        case notFoundSong
+        case notFoundAsset
+        case canNotPlayable
+        case loadFailed
+    }
+    
     static let shared = PlayerManager()
 }
+
+

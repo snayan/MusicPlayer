@@ -194,7 +194,7 @@ extension MPPlayContentView: PlayerDelegate {
         }
     }
     
-    func play(currentSong song: MPChannelData.Song, currentTimeChanged currentTime: CMTime) {
+    func play(currentSong song: MPChannelData.Song?, currentTimeChanged currentTime: CMTime) {
         DispatchQueue.main.async {
             if !self.isSeeking {
                 let value = self.timeToFloat(time: currentTime)
@@ -204,7 +204,7 @@ extension MPPlayContentView: PlayerDelegate {
         }
     }
     
-    func play(cuurentSong song: MPChannelData.Song, statusChanged status: PlayerManager.Status) {
+    func play(cuurentSong song: MPChannelData.Song?, statusChanged status: PlayerManager.Status) {
         DispatchQueue.main.async {
             self.playBtn.setBackgroundImage(UIImage(named: status == .playing ? "playIcon" : "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: .normal);
             status == .playing ? self.startRotateImage() : self.stopRotateImage()
