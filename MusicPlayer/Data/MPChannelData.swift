@@ -15,6 +15,14 @@ struct MPChannelData: Decodable {
         var mid: String?
         var name: String?
         var title: String?
+        var picture: String? {
+            get {
+                guard let midValue = mid else {
+                    return nil
+                }
+                return "https://y.gtimg.cn/music/photo_new/T002R300x300M000\(midValue).jpg"
+            }
+        }
     }
     
     struct Singer: Decodable {
@@ -27,7 +35,7 @@ struct MPChannelData: Decodable {
                 guard let midValue = mid else {
                     return nil
                 }
-                return "https://y.gtimg.cn/music/photo_new/T001R300x300M000\(midValue).jpg?max_age=2592000"
+                return "https://y.gtimg.cn/music/photo_new/T001R300x300M000\(midValue).jpg"
             }
         }
     }

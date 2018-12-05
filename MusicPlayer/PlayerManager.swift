@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MediaPlayer
 import AVFoundation
 
 typealias Song = MPChannelData.Song
@@ -89,6 +90,7 @@ class PlayerManager {
             delegate?.play(songChanged: currentSong)
             resetPlayingSongState()
             prepareMedia()
+            updateNowPlayingInfoCenter()
         }
     }
     private(set) var status: Status {
@@ -358,6 +360,42 @@ extension PlayerManager {
     }
 }
 
-
+extension PlayerManager {
+    
+    private func updateNowPlayingInfoCenter(artwork: UIImage? = nil, hasFetch: Bool = false) {
+        guard let currentSong = currentSong else {
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+            return
+        }
+        var singer: MPChannelData.Singer?
+        var nowPlayingInfo: [String: Any] = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
+        if let singers = currentSong.singer, singers.count > 0 {
+            singer = singers[0]
+        }
+        if artwork == nil, hasFetch == false, let singer = singer, let picture = singer.picture, let url = URL(string: picture) {
+            MPBaseURLSession.getImage(withUrl: url, completionHandler: { [unowned self] image, error in
+                self.updateNowPlayingInfoCenter(artwork: image, hasFetch: true)
+            })
+            return
+        }
+        nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackQueueCount] = queue.list.count
+        nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = currentSong.album?.title
+        nowPlayingInfo[MPMediaItemPropertyAlbumArtist] = singer?.name
+        nowPlayingInfo[MPMediaItemPropertyArtist] = singer?.title
+        nowPlayingInfo[MPMediaItemPropertyAssetURL] = currentSong.mediaUrl != nil ? URL(string: currentSong.mediaUrl!) : nil
+        nowPlayingInfo[MPMediaItemPropertyIsCloudItem] = false
+//        nowPlayingInfo[MPMediaItemPropertyMediaType] = MPMediaType(rawValue: 1)
+        nowPlayingInfo[MPMediaItemPropertyTitle] = currentSong.title
+        if let artwork = artwork {
+            let itemArtwork = MPMediaItemArtwork(boundsSize: artwork.size, requestHandler: {
+                (size) -> UIImage in
+                return artwork
+            })
+            nowPlayingInfo[MPMediaItemPropertyArtwork] = itemArtwork
+        }
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+}
 
 
