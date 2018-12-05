@@ -27,8 +27,11 @@ class MPRecommendViewController: UICollectionViewController {
         layout.minimumInteritemSpacing = CGFloat(10)
         layout.scrollDirection = .vertical
         self.init(collectionViewLayout: layout)
-        requestData()
         setup()
+    }
+    
+    override func viewDidLoad() {
+        requestData()
     }
     
     fileprivate func requestData() {

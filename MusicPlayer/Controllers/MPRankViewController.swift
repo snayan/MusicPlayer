@@ -23,12 +23,14 @@ class MPRankViewController: UITableViewController {
     
     convenience init() {
         self.init(style: .plain)
-        tableView.allowsSelection = false
+        tableView.allowsMultipleSelection = false
         tableView.backgroundColor = UIColor(named: "bgColor")
         tableView.separatorStyle = .none
         tableView.register(MPRankTableViewCell.self, forCellReuseIdentifier: MPRankTableViewCell.reuseIdentifier)
+    }
+    
+    override func viewDidLoad() {
         requestData()
-        
     }
     
     fileprivate func requestData() {
@@ -62,10 +64,17 @@ class MPRankViewController: UITableViewController {
         if indexPath.row < data.count {
             cell.data = data[indexPath.row]
         }
+        cell.selectionStyle = .none
         return cell
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return  CGFloat(110)
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.showAlter(title: "开发中", message: "功能正在开发中，敬请期待", configurateAction: {
+            return [UIAlertAction(title: "加油", style: .cancel, handler: nil)]
+        }, completion: nil)
     }
 }
