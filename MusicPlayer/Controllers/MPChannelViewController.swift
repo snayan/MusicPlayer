@@ -52,11 +52,13 @@ class MPChannelViewController: UITableViewController {
             
             guard error == nil else {
                 // toast 提示错误
+                self.showRequestErrorAlter(error: error, buttonHandler: nil)
                 return
             }
             
             guard var pageData = data else {
                 // toast 提示错误
+                self.showRequestErrorAlter(message: "请求频道数据失败", buttonHandler: nil)
                 return
             }
             
@@ -65,11 +67,13 @@ class MPChannelViewController: UITableViewController {
                     
                     guard error == nil else {
                         // toast 提示错误
+                        self.showRequestErrorAlter(error: error, buttonHandler: nil)
                         return
                     }
                     
                     guard let songData = data else {
                         // toast 提示错误
+                        self.showRequestErrorAlter(message: "请求歌曲数据失败", buttonHandler: nil)
                         return
                     }
                     pageData.songlist = songData
@@ -112,6 +116,7 @@ class MPChannelViewController: UITableViewController {
         if let song = data?.songlist?[indexPath.row], song.mediaUrl != nil {
             return indexPath
         }
+        self.showErrorSongAlter(buttonHandler: nil)
         return nil
     }
     

@@ -161,7 +161,7 @@ extension MPPlayContentViewController: PlayerDelegate {
     }
     
     func play(currentSong song: MPChannelData.Song?, withOccureError error: PlayerManager.PlayError) {
-        debugPrint(error)
+        self.showPlayErrorAlter(error: error, buttonHandler: nil)
     }
     
     func play(songChanged song: MPChannelData.Song?) {

@@ -32,15 +32,17 @@ class MPRecommendViewController: UICollectionViewController {
     }
     
     fileprivate func requestData() {
-        api.getHomeData { data, error in
+        api.getHomeData { [unowned self] data, error in
             
             guard error == nil else {
                 // toast 提示错误
+                self.showRequestErrorAlter(error: error, buttonHandler: nil)
                 return
             }
             
             guard let pageData = data else {
                 // toast 提示错误
+                self.showRequestErrorAlter(message: "请求推荐数据失败", buttonHandler: nil)
                 return
             }
             
@@ -185,6 +187,10 @@ class MPRecommendViewController: UICollectionViewController {
             let vc = MPChannelViewController(id: id, data: channelData)
             vc.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(vc, animated: true)
+        } else {
+            self.showAlter(title: "开发中", message: "功能正在开发中，敬请期待", configurateAction: {
+                return [UIAlertAction(title: "加油", style: .cancel, handler: nil)]
+            }, completion: nil)
         }
     }
     

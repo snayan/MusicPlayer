@@ -36,11 +36,13 @@ class MPRankViewController: UITableViewController {
             
             guard error == nil else {
                 // toast 提示错误
+                self.showRequestErrorAlter(error: error, buttonHandler: nil)
                 return
             }
             
             guard let pageData = data else {
                 // toast 提示错误
+                self.showRequestErrorAlter(message: "请求排行榜数据失败", buttonHandler: nil)
                 return
             }
             
