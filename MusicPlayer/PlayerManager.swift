@@ -268,7 +268,6 @@ class PlayerManager {
             self.player.replaceCurrentItem(with: AVPlayerItem(asset: asset))
             self.totalTime = asset.duration
             if self.status == .playing {
-                debugPrint(self.player.rate)
                 self.player.play()
             }
         }
@@ -287,7 +286,6 @@ class PlayerManager {
     }
 }
 
-
 extension PlayerManager {
     
     enum Status {
@@ -304,5 +302,62 @@ extension PlayerManager {
     
     static let shared = PlayerManager()
 }
+
+extension PlayerManager {
+    
+    private func setupNotifications() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(handleInterruption), name: .AVAudioSessionInterruption, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleRouteChange), name: .AVAudioSessionRouteChange, object: nil)
+    }
+    
+    @objc private func handleInterruption(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+            let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+            let type = AVAudioSessionInterruptionType(rawValue: typeValue) else {
+                return
+        }
+        if type == .began {
+            // Interruption began, take appropriate actions (save state, update user interface)
+            pause()
+            hasActive = false
+        } else if type == .ended {
+            guard let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt else {
+                    return
+            }
+            let options = AVAudioSessionInterruptionOptions(rawValue: optionsValue)
+            if options.contains(.shouldResume) {
+                // Interruption Ended - playback should resume
+                play()
+            }
+        }
+    }
+    
+    @objc private func handleRouteChange(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+            let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
+            let reason = AVAudioSessionRouteChangeReason(rawValue:reasonValue) else {
+                return
+        }
+        switch reason {
+            case .newDeviceAvailable:
+                let session = AVAudioSession.sharedInstance()
+                for output in session.currentRoute.outputs where output.portType == AVAudioSessionPortHeadphones {
+                    // 耳机连接
+                    break
+                }
+            case .oldDeviceUnavailable:
+                if let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
+                    for output in previousRoute.outputs where output.portType == AVAudioSessionPortHeadphones {
+                        pause()
+                        break
+                    }
+                }
+            default: ()
+        }
+    }
+}
+
+
 
 
