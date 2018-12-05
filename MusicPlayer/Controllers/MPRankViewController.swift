@@ -32,20 +32,19 @@ class MPRankViewController: UITableViewController {
     }
     
     fileprivate func requestData() {
-        api.getRankData { data, error in
-            
+        showLoading(true)
+        api.getRankData { [unowned self] data, error in
+            self.showLoading(false)
             guard error == nil else {
                 // toast 提示错误
                 self.showRequestErrorAlter(error: error, buttonHandler: nil)
                 return
             }
-            
             guard let pageData = data else {
                 // toast 提示错误
                 self.showRequestErrorAlter(message: "请求排行榜数据失败", buttonHandler: nil)
                 return
             }
-            
             self.data = pageData
         }
     }

@@ -32,7 +32,10 @@ class MPRecommendViewController: UICollectionViewController {
     }
     
     fileprivate func requestData() {
+        showLoading(true)
         api.getHomeData { [unowned self] data, error in
+            
+            self.showLoading(false)
             
             guard error == nil else {
                 // toast 提示错误

@@ -68,3 +68,42 @@ extension UIViewController {
         showAlter(title: "播放失败", message: "歌曲信息缺失，无法播放", configurateAction: configurate, completion: nil)
     }
 }
+
+
+extension UIViewController {
+    
+    func showLoading(_ show: Bool) {
+        DispatchQueue.main.async {
+            let tag = 9999
+            if show {
+                let loadingView = UIView(frame: self.view.frame)
+                let indicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+                loadingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.2)
+                loadingView.tag = tag
+                indicator.translatesAutoresizingMaskIntoConstraints = true
+                indicator.center = CGPoint(x: self.view.bounds.midX, y: self.view.bounds.midY)
+                indicator.autoresizingMask = [
+                    .flexibleLeftMargin,
+                    .flexibleRightMargin,
+                    .flexibleTopMargin,
+                    .flexibleBottomMargin
+                ]
+                indicator.hidesWhenStopped = true
+                indicator.color = UIColor(named: "themeColor")
+                loadingView.addSubview(indicator)
+                self.view.insertSubview(loadingView, at: self.view.subviews.count)
+                indicator.startAnimating()
+                
+            } else if let loadingView = self.view.viewWithTag(tag) {
+                UIView.animate(withDuration: 0.2, animations: {
+                    loadingView.alpha = 0
+                }, completion: { _ in
+                    if let indicator = loadingView.subviews[0] as? UIActivityIndicatorView {
+                        indicator.stopAnimating()
+                    }
+                    loadingView.removeFromSuperview()
+                })
+            }
+        }
+    }
+}

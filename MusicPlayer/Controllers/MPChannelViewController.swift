@@ -48,8 +48,9 @@ class MPChannelViewController: UITableViewController {
     }
     
     fileprivate func requestData() {
-        api.getChannelData(id: id, offset: offset) { data, error in
-            
+        showLoading(true)
+        api.getChannelData(id: id, offset: offset) { [unowned self] data, error in
+            self.showLoading(false)
             guard error == nil else {
                 // toast 提示错误
                 self.showRequestErrorAlter(error: error, buttonHandler: nil)
