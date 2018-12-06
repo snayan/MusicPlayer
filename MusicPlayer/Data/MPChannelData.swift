@@ -53,7 +53,17 @@ struct MPChannelData: Decodable {
         var mediaUrl: String?
         var album: Album?
         var singer: [Singer]?
-        
+        var mediaPicture: String? {
+            get {
+                if let picture = album?.picture {
+                    return picture
+                } else if let singer = singer, singer.count > 0 {
+                    return singer[0].picture
+                } else {
+                    return nil
+                }
+            }
+        }
     }
     
     struct Data: Decodable {

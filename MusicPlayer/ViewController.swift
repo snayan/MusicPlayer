@@ -11,7 +11,8 @@ import SnapKit
 
 class ViewController: UITabBarController {
     
-    var playingImageView: UIImageView!
+    private var animator: UIViewPropertyAnimator?
+    private var playingImageView: UIImageView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,6 +20,7 @@ class ViewController: UITabBarController {
         self.view.backgroundColor = UIColor(named: "bgColor")
         setupPlayingImage()
         setupControllers()
+        observePlayerNotification()
     }
 
     override func didReceiveMemoryWarning() {
@@ -46,8 +48,13 @@ class ViewController: UITabBarController {
         playingImageView.backgroundColor = UIColor.red
         playingImageView.layer.cornerRadius = height/2
         playingImageView.clipsToBounds = true
-        playingImageView.downloaded(from: PlayerManager.shared.currentSong?.album?.picture, useFallImage: UIImage(named: "defaultSongPic"))
+        playingImageView.downloaded(from: PlayerManager.shared.currentSong?.mediaPicture, useFallImage: UIImage(named: "defaultSongPic"))
         tabBar.addSubview(playingImageView)
+        if PlayerManager.shared.status == .playing {
+            startRotateImage()
+        } else {
+            stopRotateImage()
+        }
     }
     
     private func setupControllers() {
@@ -57,6 +64,23 @@ class ViewController: UITabBarController {
         viewControllers = [recommendController, playingController, rankController]
         selectedIndex = 0
         delegate = self
+    }
+    
+    private func startRotateImage() {
+        if animator == nil {
+            animator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 30, delay: 0, options: .curveLinear, animations: {
+                self.playingImageView.transform = self.playingImageView.transform.rotated(by: CGFloat.pi)
+            }, completion: { finalPosition in
+                self.animator = nil
+                self.startRotateImage()
+            })
+        } else {
+            animator!.startAnimation()
+        }
+    }
+    
+    private func stopRotateImage() {
+        animator?.pauseAnimation()
     }
     
 }
@@ -72,3 +96,27 @@ extension ViewController: UITabBarControllerDelegate {
     }
 }
 
+extension ViewController {
+    
+    func observePlayerNotification() {
+        let center = NotificationCenter.default
+        center.addObserver(self, selector: #selector(ViewController.playerSongChanged), name: Notification.Name.player.songChanged, object: nil)
+        center.addObserver(self, selector: #selector(ViewController.playerStatusChanged), name: Notification.Name.player.statusChanged, object: nil)
+    }
+    
+    @objc func playerSongChanged(notification: Notification) {
+        let userInfo = notification.userInfo
+        let song = userInfo?["value"] as? Song
+        DispatchQueue.main.async {
+            self.playingImageView.downloaded(from: song?.mediaPicture, useFallImage: UIImage(named: "defaultSongPic"))
+        }
+    }
+    
+    @objc private func playerStatusChanged(notification: Notification) {
+        let userInfo = notification.userInfo
+        let status = userInfo?["value"] as? PlayerManager.Status
+        DispatchQueue.main.async {
+            status == .playing ? self.startRotateImage() : self.stopRotateImage()
+        }
+    }
+}

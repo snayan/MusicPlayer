@@ -96,38 +96,11 @@ class MPPlayContentView: UIView {
         addSubview(forwardBtn)
         addSubview(rewardBtn)
         addSubview(playBtn)
+        observePlayerNotification()
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    @objc fileprivate func togglePlay() {
-        if PlayerManager.shared.status == .playing {
-            PlayerManager.shared.pause()
-        } else {
-            PlayerManager.shared.play()
-        }
-    }
-    
-    @objc fileprivate func forward() {
-        PlayerManager.shared.next()
-    }
-    
-    @objc fileprivate func rewind() {
-        PlayerManager.shared.previous()
-    }
-    
-    @objc fileprivate func seekSongTime() {
-        PlayerManager.shared.seek(to: timeSlider.value, completionHandler: {
-            [unowned self] success in
-            self.isSeeking = !success
-        })
-    }
-    
-    @objc fileprivate func startSeekSong() {
-        self.isSeeking = true
-        self.currentSongTime.text = self.formartTime(time: timeSlider.value)
     }
     
     func startRotateImage() {
@@ -141,38 +114,45 @@ class MPPlayContentView: UIView {
         } else {
             animator!.startAnimation()
         }
-        
     }
     
     func stopRotateImage() {
         animator?.pauseAnimation()
     }
     
-    func timeToFloat(time: CMTime?) -> Float {
-        guard let time = time else {
-            return 0
+    @objc private func togglePlay() {
+        if PlayerManager.shared.status == .playing {
+            PlayerManager.shared.pause()
+        } else {
+            PlayerManager.shared.play()
         }
-        return Float(CMTimeGetSeconds(time))
     }
     
-    func formartTime(time: Float?) -> String {
-        guard let time = time else {
-            return "00:00"
-        }
-        let intTime = Int(time)
-        let munite = intTime / 60
-        let second = intTime - munite * 60
-        let muniteString = munite < 10 ? "0\(munite)" : "\(munite)"
-        let secondString = second < 10 ? "0\(second)" : "\(second)"
-        return muniteString + ":" + secondString
+    @objc private func forward() {
+        PlayerManager.shared.next()
     }
     
-    fileprivate func angleToRadian(angle: Int) -> CGFloat {
+    @objc private func rewind() {
+        PlayerManager.shared.previous()
+    }
+    
+    @objc private func seekSongTime() {
+        PlayerManager.shared.seek(to: timeSlider.value, completionHandler: {
+            [unowned self] success in
+            self.isSeeking = !success
+        })
+    }
+    
+    @objc private func startSeekSong() {
+        self.isSeeking = true
+        self.currentSongTime.text = formartTime(time: timeSlider.value)
+    }
+    
+    private func angleToRadian(angle: Int) -> CGFloat {
         return CGFloat.pi * CGFloat((angle % 360)) / 180
     }
     
-    
-    fileprivate func createLabel(fontSize size: Float, fontColor color: UIColor?) -> UILabel {
+    private func createLabel(fontSize size: Float, fontColor color: UIColor?) -> UILabel {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: CGFloat(size))
         label.textColor = color
@@ -184,27 +164,40 @@ class MPPlayContentView: UIView {
     
 }
 
-extension MPPlayContentView: PlayerDelegate {
+extension MPPlayContentView {
     
-    func play(currentSong song: MPChannelData.Song?, totalTimeChanged totalTime: CMTime?) {
+    private func observePlayerNotification() {
+        let center = NotificationCenter.default
+        center.addObserver(self, selector: #selector(MPPlayContentView.playerTotalTimeChanged), name: Notification.Name.player.totalTimeChanged, object: nil)
+        center.addObserver(self, selector: #selector(MPPlayContentView.playerCurrentTimeChanged), name: Notification.Name.player.currentTimeChanged, object: nil)
+        center.addObserver(self, selector: #selector(MPPlayContentView.playerStatusChanged), name: Notification.Name.player.statusChanged, object: nil)
+    }
+    
+    @objc private func playerTotalTimeChanged(notification: Notification) {
+        let userInfo = notification.userInfo
+        let totalTime = userInfo?["value"] as? CMTime
+        let maximumValue: Float = totalTime == nil ? 0 : timeToFloat(time: totalTime!)
         DispatchQueue.main.async {
-            let maximumValue: Float = totalTime == nil ? 0 : self.timeToFloat(time: totalTime!)
             self.timeSlider.maximumValue = maximumValue
-            self.totalSongTime.text = self.formartTime(time: maximumValue)
+            self.totalSongTime.text = formartTime(time: maximumValue)
         }
     }
     
-    func play(currentSong song: MPChannelData.Song?, currentTimeChanged currentTime: CMTime) {
+    @objc private func playerCurrentTimeChanged(notification: Notification) {
+        let userInfo = notification.userInfo
+        let currentTime = userInfo?["value"] as? CMTime
         DispatchQueue.main.async {
             if !self.isSeeking {
-                let value = self.timeToFloat(time: currentTime)
-                self.currentSongTime.text = self.formartTime(time: value)
+                let value = timeToFloat(time: currentTime)
+                self.currentSongTime.text = formartTime(time: value)
                 self.timeSlider.value = value
             }
         }
     }
     
-    func play(cuurentSong song: MPChannelData.Song?, statusChanged status: PlayerManager.Status) {
+    @objc private func playerStatusChanged(notification: Notification) {
+        let userInfo = notification.userInfo
+        let status = userInfo?["value"] as? PlayerManager.Status
         DispatchQueue.main.async {
             self.playBtn.setBackgroundImage(UIImage(named: status == .playing ? "playIcon" : "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: .normal);
             status == .playing ? self.startRotateImage() : self.stopRotateImage()

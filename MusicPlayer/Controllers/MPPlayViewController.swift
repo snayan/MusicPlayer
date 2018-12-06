@@ -72,7 +72,6 @@ fileprivate class MPPlayContentViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         navigationItem.titleView = titleView
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(tapDismiss))
-        PlayerManager.shared.delegate = self
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -86,6 +85,7 @@ fileprivate class MPPlayContentViewController: UIViewController {
         view.insertSubview(backgroundView, belowSubview: contentView)
         makeConstriants()
         updateContentifNeed()
+        observePlayerSongChanged()
         if let data = data, PlayerManager.shared.currentSong != data {
             PlayerManager.shared.inset(withSong: data, atHead: true)
             if autoPlay {
@@ -102,11 +102,11 @@ fileprivate class MPPlayContentViewController: UIViewController {
             return
         }
         song.text = songData.name
+        backgroundImage.downloaded(from: songData.mediaPicture)
+        contentView.singerPicture = songData.mediaPicture
         if let singerData = songData.singer, singerData.count > 0 {
             let fisrtSinger = singerData[0]
             singer.text = fisrtSinger.name
-            backgroundImage.downloaded(from: fisrtSinger.picture)
-            contentView.singerPicture = fisrtSinger.picture
         }
     }
     
@@ -114,10 +114,10 @@ fileprivate class MPPlayContentViewController: UIViewController {
         let status = PlayerManager.shared.status
         status == .playing ? contentView.startRotateImage() : contentView.stopRotateImage()
         contentView.playBtn.setBackgroundImage(UIImage(named: status == .playing ? "playIcon" : "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: .normal);
-        contentView.timeSlider.maximumValue = contentView.timeToFloat(time: PlayerManager.shared.totalTime)
-        contentView.timeSlider.value = contentView.timeToFloat(time: PlayerManager.shared.player.currentTime())
-        contentView.currentSongTime.text =  contentView.formartTime(time: contentView.timeSlider.value)
-        contentView.totalSongTime.text = contentView.formartTime(time: contentView.timeToFloat(time: PlayerManager.shared.totalTime))
+        contentView.timeSlider.maximumValue = timeToFloat(time: PlayerManager.shared.totalTime)
+        contentView.timeSlider.value = timeToFloat(time: PlayerManager.shared.player.currentTime())
+        contentView.currentSongTime.text =  formartTime(time: contentView.timeSlider.value)
+        contentView.totalSongTime.text = formartTime(time: timeToFloat(time: PlayerManager.shared.totalTime))
     }
     
     fileprivate func createLabel(fontSize size: Float, fontColor color: UIColor) -> UILabel {
@@ -148,28 +148,17 @@ fileprivate class MPPlayContentViewController: UIViewController {
     }
 }
 
-extension MPPlayContentViewController: PlayerDelegate {
+extension MPPlayContentViewController {
     
-    func play(currentSong song: MPChannelData.Song?, totalTimeChanged totalTime: CMTime?) {
-        self.contentView.play(currentSong: song, totalTimeChanged: totalTime)
+    func observePlayerSongChanged() {
+        NotificationCenter.default.addObserver(self, selector: #selector(MPPlayContentViewController.playerSongChanged), name: Notification.Name.player.songChanged, object: nil)
     }
     
-    func play(currentSong song: MPChannelData.Song?, currentTimeChanged currentTime: CMTime) {
-        self.contentView.play(currentSong: song, currentTimeChanged: currentTime)
-    }
-    
-    func play(cuurentSong song: MPChannelData.Song?, statusChanged status: PlayerManager.Status) {
-        self.contentView.play(cuurentSong: song, statusChanged: status)
-    }
-    
-    func play(currentSong song: MPChannelData.Song?, withOccureError error: PlayerManager.PlayError) {
-        self.showPlayErrorAlter(error: error, buttonHandler: nil)
-    }
-    
-    func play(songChanged song: MPChannelData.Song?) {
+    @objc func playerSongChanged(notification: Notification) {
+        let userInfo = notification.userInfo
+        let song = userInfo?["value"] as? Song
         DispatchQueue.main.async {
             self.data = song
         }
     }
-    
 }

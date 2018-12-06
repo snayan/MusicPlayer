@@ -81,7 +81,7 @@ struct SongQueue {
     }
 }
 
-class PlayerManager {
+class PlayerManager: PlayerDelegate {
     
     internal var autoPlayNextAtSongEnd: Bool
     internal weak var delegate: PlayerDelegate?
@@ -134,6 +134,7 @@ class PlayerManager {
         autoPlayNextAtSongEnd = true
         player = AVPlayer()
         queue = SongQueue()
+        delegate = self
     }
     
     deinit {
