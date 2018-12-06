@@ -98,15 +98,23 @@ fileprivate class MPPlayContentViewController: UIViewController {
 
     
     fileprivate func updateContentifNeed() {
-        guard let songData = data else {
-            return
-        }
-        song.text = songData.name
-        backgroundImage.downloaded(from: songData.mediaPicture)
-        contentView.singerPicture = songData.mediaPicture
-        if let singerData = songData.singer, singerData.count > 0 {
+        song.text = data?.name
+        backgroundImage.downloaded(from: data?.mediaPicture)
+        contentView.singerPicture = data?.mediaPicture
+        if let singerData = data?.singer, singerData.count > 0 {
             let fisrtSinger = singerData[0]
             singer.text = fisrtSinger.name
+        }
+        if data == nil {
+            singer.text = nil
+            contentView.timeSlider.isEnabled = false
+            contentView.timeSlider.alpha = 0.4
+            contentView.forwardBtn.isEnabled = false
+            contentView.forwardBtn.alpha = 0.4
+            contentView.rewardBtn.isEnabled = false
+            contentView.rewardBtn.alpha = 0.4
+            contentView.playBtn.isEnabled = false
+            contentView.playBtn.alpha = 0.4
         }
     }
     
