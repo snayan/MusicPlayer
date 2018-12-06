@@ -20,7 +20,7 @@ class MPRankTableViewCell: UITableViewCell {
             data.songList?.enumerated().forEach() { index, song in
                 if index < songCell.count {
                     let text = NSMutableAttributedString(string: "\(index + 1)  \(song.songname) - \(song.singername)")
-                    text.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor.black, range: NSMakeRange(2, 2 + song.songname.count))
+                    text.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.black, range: NSMakeRange(2, 2 + song.songname.count))
                     songCell[index].attributedText = text
                 }
             }
@@ -67,7 +67,7 @@ class MPRankTableViewCell: UITableViewCell {
         return iconView
     }()
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = UIColor(named: "bgColor")
         cellView.backgroundColor = UIColor.white

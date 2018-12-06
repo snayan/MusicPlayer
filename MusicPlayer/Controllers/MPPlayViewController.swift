@@ -55,7 +55,7 @@ fileprivate class MPPlayContentViewController: UIViewController {
         backgroundImage.frame.origin = CGPoint(x: -(maxValue - parentViewWidth)/2, y: -(maxValue - parentViewHeight)/2)
         
         // 设置blur view
-        var blurEffect = UIBlurEffect(style: UIBlurEffectStyle.dark)
+        var blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = view.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]

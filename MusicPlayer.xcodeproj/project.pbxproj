@@ -406,6 +406,7 @@
 				TargetAttributes = {
 					E055385C2195B9E600F6802D = {
 						CreatedOnToolsVersion = 9.3;
+						LastSwiftMigration = 1010;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -414,10 +415,12 @@
 					};
 					E05538702195B9E700F6802D = {
 						CreatedOnToolsVersion = 9.3;
+						LastSwiftMigration = 1010;
 						TestTargetID = E055385C2195B9E600F6802D;
 					};
 					E055387B2195B9E700F6802D = {
 						CreatedOnToolsVersion = 9.3;
+						LastSwiftMigration = 1010;
 						TestTargetID = E055385C2195B9E600F6802D;
 					};
 				};
@@ -774,7 +777,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = snayan2018.MusicPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -797,7 +800,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = snayan2018.MusicPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -817,7 +820,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = snayan.MusicPlayerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MusicPlayer.app/MusicPlayer";
 			};
@@ -838,7 +841,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = snayan.MusicPlayerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MusicPlayer.app/MusicPlayer";
 			};
@@ -858,7 +861,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = snayan.MusicPlayerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = MusicPlayer;
 			};
@@ -878,7 +881,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = snayan.MusicPlayerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = MusicPlayer;
 			};

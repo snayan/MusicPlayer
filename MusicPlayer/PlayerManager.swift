@@ -205,7 +205,7 @@ class PlayerManager: PlayerDelegate {
     
     func seek(to time: Float, completionHandler handler: @escaping (_: Bool) -> Void) {
         let time = CMTime(seconds: Double(time), preferredTimescale: 1000)
-        player.seek(to: time, toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: handler)
+        player.seek(to: time, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero, completionHandler: handler)
     }
     
     private func addTimeObserver() {
@@ -225,7 +225,7 @@ class PlayerManager: PlayerDelegate {
     }
     
     private func addEndObserver() {
-        if let totalTime = totalTime, totalTime > kCMTimeZero, endObserverToken == nil {
+        if let totalTime = totalTime, totalTime > CMTime.zero, endObserverToken == nil {
             endObserverToken = player.addBoundaryTimeObserver(forTimes: [NSValue(time:totalTime)], queue: DispatchQueue.main, using: {
                 [unowned self] in
                 if self.autoPlayNextAtSongEnd {
@@ -287,8 +287,8 @@ class PlayerManager: PlayerDelegate {
     
     private func resetPlayingSongState() {
         player.replaceCurrentItem(with: nil)
-        playHandler(currentTime: kCMTimeZero)
-        totalTime = kCMTimeZero
+        playHandler(currentTime: CMTime.zero)
+        totalTime = CMTime.zero
     }
 }
 
@@ -313,14 +313,14 @@ extension PlayerManager {
     
     private func setupNotifications() {
         let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(handleInterruption), name: .AVAudioSessionInterruption, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleRouteChange), name: .AVAudioSessionRouteChange, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleInterruption), name: AVAudioSession.interruptionNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleRouteChange), name: AVAudioSession.routeChangeNotification, object: nil)
     }
     
     @objc private func handleInterruption(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
             let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
-            let type = AVAudioSessionInterruptionType(rawValue: typeValue) else {
+            let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
                 return
         }
         if type == .began {
@@ -331,7 +331,7 @@ extension PlayerManager {
             guard let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt else {
                     return
             }
-            let options = AVAudioSessionInterruptionOptions(rawValue: optionsValue)
+            let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
             if options.contains(.shouldResume) {
                 // Interruption Ended - playback should resume
                 play()
@@ -342,19 +342,19 @@ extension PlayerManager {
     @objc private func handleRouteChange(notification: Notification) {
         guard let userInfo = notification.userInfo,
             let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
-            let reason = AVAudioSessionRouteChangeReason(rawValue:reasonValue) else {
+            let reason = AVAudioSession.RouteChangeReason(rawValue:reasonValue) else {
                 return
         }
         switch reason {
             case .newDeviceAvailable:
                 let session = AVAudioSession.sharedInstance()
-                for output in session.currentRoute.outputs where output.portType == AVAudioSessionPortHeadphones {
+                for output in session.currentRoute.outputs where convertFromAVAudioSessionPort(output.portType) == convertFromAVAudioSessionPort(AVAudioSession.Port.headphones) {
                     // 耳机连接
                     break
                 }
             case .oldDeviceUnavailable:
                 if let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
-                    for output in previousRoute.outputs where output.portType == AVAudioSessionPortHeadphones {
+                    for output in previousRoute.outputs where convertFromAVAudioSessionPort(output.portType) == convertFromAVAudioSessionPort(AVAudioSession.Port.headphones) {
                         pause()
                         break
                     }
@@ -403,3 +403,8 @@ extension PlayerManager {
 }
 
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVAudioSessionPort(_ input: AVAudioSession.Port) -> String {
+	return input.rawValue
+}

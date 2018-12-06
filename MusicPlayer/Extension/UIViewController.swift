@@ -77,7 +77,7 @@ extension UIViewController {
             let tag = 9999
             if show {
                 let loadingView = UIView(frame: self.view.frame)
-                let indicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+                let indicator = UIActivityIndicatorView(style: .whiteLarge)
                 loadingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.2)
                 loadingView.tag = tag
                 indicator.translatesAutoresizingMaskIntoConstraints = true

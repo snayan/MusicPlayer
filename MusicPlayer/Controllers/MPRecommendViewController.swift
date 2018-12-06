@@ -64,8 +64,8 @@ class MPRecommendViewController: UICollectionViewController {
             collectionView.register(MPImageSlideshowCell.self, forCellWithReuseIdentifier: MPImageSlideshowCell.reuseIdentifier)
             collectionView.register(MPBoxSongViewCell.self, forCellWithReuseIdentifier: MPBoxSongViewCell.reuseIdentifier)
             collectionView.register(MPCopyrightViewCell.self, forCellWithReuseIdentifier: MPCopyrightViewCell.reuseIdentifier)
-            collectionView.register(MPBoxSongViewHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MPBoxSongViewHeader.reuseIdentifier)
-            collectionView.register(MPCollectionEmptyCell.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MPCollectionEmptyCell.reuseIdentifier)
+            collectionView.register(MPBoxSongViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MPBoxSongViewHeader.reuseIdentifier)
+            collectionView.register(MPCollectionEmptyCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MPCollectionEmptyCell.reuseIdentifier)
         }
     }
     

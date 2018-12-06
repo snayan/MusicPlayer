@@ -101,7 +101,7 @@ class MPBoxSongViewCell: UICollectionViewCell {
     
     fileprivate func makeConstraints() {
         imageCell.snp.makeConstraints{ make in
-            make.edges.equalToSuperview().inset(UIEdgeInsetsMake(0, 0, 46, 0))
+            make.edges.equalToSuperview().inset(UIEdgeInsets.init(top: 0, left: 0, bottom: 46, right: 0))
         }
         titleCell.snp.makeConstraints{ make in
             make.top.equalTo(imageCell.snp.bottom).offset(5)

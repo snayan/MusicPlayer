@@ -54,7 +54,7 @@ class ViewController: UITabBarController {
         let height = tabBar.frame.height + 8
         let tabBarWidth = tabBar.frame.width
         playingImageView = UIImageView()
-        playingImageView.frame = CGRect(x: (tabBarWidth - height)/2 , y: (tabBar.frame.height - height), width: height, height: height)
+        playingImageView.frame = CGRect(x: (tabBarWidth - height)/2 , y: (tabBar.frame.height - height)-2, width: height, height: height)
         playingImageView.backgroundColor = UIColor.red
         playingImageView.layer.cornerRadius = height/2
         playingImageView.clipsToBounds = true

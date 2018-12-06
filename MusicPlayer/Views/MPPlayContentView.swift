@@ -41,35 +41,35 @@ class MPPlayContentView: UIView {
         slider.minimumTrackTintColor = UIColor(named: "themeColor")
         slider.maximumTrackTintColor = UIColor(named: "bgColor")
         slider.frame = CGRect(x: paddingLeft, y: songImageView.frame.maxY + paddingTop, width: contentWidth, height: 10)
-        slider.addTarget(self, action: #selector(MPPlayContentView.seekSongTime), for: UIControlEvents.valueChanged)
-        slider.addTarget(self, action: #selector(MPPlayContentView.startSeekSong), for: UIControlEvents.touchDragInside)
+        slider.addTarget(self, action: #selector(MPPlayContentView.seekSongTime), for: UIControl.Event.valueChanged)
+        slider.addTarget(self, action: #selector(MPPlayContentView.startSeekSong), for: UIControl.Event.touchDragInside)
         return slider
     }()
     lazy var forwardBtn: UIButton = { [unowned self] in
-        let btn = UIButton(type: UIButtonType.system)
+        let btn = UIButton(type: UIButton.ButtonType.system)
         let width: CGFloat = 34
         let height: CGFloat = 31 * 34 / 48
         btn.frame = CGRect(x: playBtn.frame.maxX + 60, y: playBtn.frame.minY + playBtn.frame.height/2 - height/2, width: 34, height: 31 * 34 / 48)
         btn.tintColor = UIColor(named: "themeLightColor")
-        btn.setBackgroundImage(UIImage(named: "forwardIcon")?.withRenderingMode(.alwaysTemplate), for: UIControlState.normal)
+        btn.setBackgroundImage(UIImage(named: "forwardIcon")?.withRenderingMode(.alwaysTemplate), for: UIControl.State.normal)
         btn.addTarget(self, action: #selector(MPPlayContentView.forward), for: .touchUpInside)
         return btn
     }()
     lazy var rewardBtn: UIButton = { [unowned self] in
-        let btn = UIButton(type: UIButtonType.system)
+        let btn = UIButton(type: UIButton.ButtonType.system)
         let width: CGFloat = 34
         let height: CGFloat = 31 * 34 / 48
         btn.frame = CGRect(x: playBtn.frame.minX - width - 60, y: playBtn.frame.minY + playBtn.frame.height/2 - height/2, width: 34, height: 31 * 34 / 48)
         btn.tintColor = UIColor(named: "themeLightColor")
-        btn.setBackgroundImage(UIImage(named: "rewindIcon")?.withRenderingMode(.alwaysTemplate), for: UIControlState.normal)
+        btn.setBackgroundImage(UIImage(named: "rewindIcon")?.withRenderingMode(.alwaysTemplate), for: UIControl.State.normal)
         btn.addTarget(self, action: #selector(MPPlayContentView.rewind), for: .touchUpInside)
         return btn
     }()
     lazy var playBtn: UIButton = { [unowned self] in
-        let btn = UIButton(type: UIButtonType.system)
+        let btn = UIButton(type: UIButton.ButtonType.system)
         btn.frame = CGRect(x: (frame.width - 34 ) / 2, y: currentSongTime.frame.maxY + paddingTop - 19, width: 34, height: 38)
         btn.tintColor = UIColor(named: "themeLightColor")
-        btn.setBackgroundImage(UIImage(named: "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: UIControlState.normal)
+        btn.setBackgroundImage(UIImage(named: "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: UIControl.State.normal)
         btn.addTarget(self, action: #selector(MPPlayContentView.togglePlay), for: .touchUpInside)
         return btn
     }()
