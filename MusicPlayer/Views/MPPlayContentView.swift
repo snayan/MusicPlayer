@@ -166,11 +166,15 @@ class MPPlayContentView: UIView {
 
 extension MPPlayContentView {
     
-    private func observePlayerNotification() {
+    func observePlayerNotification() {
         let center = NotificationCenter.default
         center.addObserver(self, selector: #selector(MPPlayContentView.playerTotalTimeChanged), name: Notification.Name.player.totalTimeChanged, object: nil)
         center.addObserver(self, selector: #selector(MPPlayContentView.playerCurrentTimeChanged), name: Notification.Name.player.currentTimeChanged, object: nil)
         center.addObserver(self, selector: #selector(MPPlayContentView.playerStatusChanged), name: Notification.Name.player.statusChanged, object: nil)
+    }
+    
+    func removeObserver() {
+        NotificationCenter.default.removeObserver(self)
     }
     
     @objc private func playerTotalTimeChanged(notification: Notification) {

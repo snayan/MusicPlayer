@@ -40,7 +40,6 @@ fileprivate class MPPlayContentViewController: UIViewController {
         let view = UIView()
         view.addSubview(song)
         view.addSubview(singer)
-        view.backgroundColor = UIColor.red
         return view
         }()
     lazy var backgroundView: UIView = { [unowned self] in
@@ -152,6 +151,8 @@ fileprivate class MPPlayContentViewController: UIViewController {
     }
     
     @objc fileprivate func tapDismiss() {
+        removeObserver()
+        contentView.removeObserver()
         dismiss(animated: true, completion: nil)
     }
 }
@@ -160,6 +161,10 @@ extension MPPlayContentViewController {
     
     func observePlayerSongChanged() {
         NotificationCenter.default.addObserver(self, selector: #selector(MPPlayContentViewController.playerSongChanged), name: Notification.Name.player.songChanged, object: nil)
+    }
+    
+    func removeObserver() {
+        NotificationCenter.default.removeObserver(self)
     }
     
     @objc func playerSongChanged(notification: Notification) {

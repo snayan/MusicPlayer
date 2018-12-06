@@ -20,7 +20,17 @@ class ViewController: UITabBarController {
         self.view.backgroundColor = UIColor(named: "bgColor")
         setupPlayingImage()
         setupControllers()
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         observePlayerNotification()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        removeObserver()
     }
 
     override func didReceiveMemoryWarning() {
@@ -41,10 +51,10 @@ class ViewController: UITabBarController {
     }
     
     private func setupPlayingImage() {
-        let height = tabBar.frame.height - 8
+        let height = tabBar.frame.height + 8
         let tabBarWidth = tabBar.frame.width
         playingImageView = UIImageView()
-        playingImageView.frame = CGRect(x: (tabBarWidth - height)/2 , y: (tabBar.frame.height - height)/2, width: height, height: height)
+        playingImageView.frame = CGRect(x: (tabBarWidth - height)/2 , y: (tabBar.frame.height - height), width: height, height: height)
         playingImageView.backgroundColor = UIColor.red
         playingImageView.layer.cornerRadius = height/2
         playingImageView.clipsToBounds = true
@@ -102,6 +112,10 @@ extension ViewController {
         let center = NotificationCenter.default
         center.addObserver(self, selector: #selector(ViewController.playerSongChanged), name: Notification.Name.player.songChanged, object: nil)
         center.addObserver(self, selector: #selector(ViewController.playerStatusChanged), name: Notification.Name.player.statusChanged, object: nil)
+    }
+    
+    func removeObserver() {
+        NotificationCenter.default.removeObserver(self)
     }
     
     @objc func playerSongChanged(notification: Notification) {
