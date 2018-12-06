@@ -19,7 +19,6 @@ class MPPlayViewController: UINavigationController {
         navigationBar.barTintColor = UIColor(named: "themeColor")
         navigationBar.tintColor = UIColor.white
     }
-
 }
 
 fileprivate class MPPlayContentViewController: UIViewController {
@@ -88,7 +87,10 @@ fileprivate class MPPlayContentViewController: UIViewController {
         makeConstriants()
         updateContentifNeed()
         if let data = data, PlayerManager.shared.currentSong != data {
-            PlayerManager.shared.play(withSong: data)
+            PlayerManager.shared.inset(withSong: data, atHead: true)
+            if autoPlay {
+                PlayerManager.shared.play()
+            }
         } else {
             restorePlayingInfo()
         }

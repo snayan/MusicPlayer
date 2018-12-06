@@ -45,7 +45,7 @@ struct MPBaseURLSession {
         if widthExtendPatam {
             fullpath += "?" + extendParam
         }
-        return URL(string: fullpath)
+        return URL.ATS(string: fullpath)
     }
     
     static func appendQuery(url: URL?, withQuery query : String) -> URL? {
@@ -64,7 +64,7 @@ struct MPBaseURLSession {
         let scheme = (url.scheme ?? "") + "://"
         let host =  url.host ?? ""
         let path = url.path
-        return URL(string: scheme + host + path + "?" + newQuery)
+        return URL.ATS(string: scheme + host + path + "?" + newQuery)
     }
     
     static func getData(withUrl url: URL, completionHandler handler: @escaping (_: Data?, _: HTTPURLResponse?, _: Error?) -> Void) {

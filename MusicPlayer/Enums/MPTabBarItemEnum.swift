@@ -11,7 +11,7 @@ import UIKit
 enum MPTabBarItemEnum: String {
     case Recommend = "推荐"
     case Rank = "排行榜"
-    case Search = "搜索"
+    case Playing = "播放中"
     
     func getTabBarIcon() -> UIImage {
         var iconName: String
@@ -21,7 +21,7 @@ enum MPTabBarItemEnum: String {
         case .Rank:
             iconName = "RankIcon"
             
-        case .Search:
+        case .Playing:
             iconName = "SearchIcon"
         }
         return UIImage(named: iconName)!
@@ -34,7 +34,7 @@ enum MPTabBarItemEnum: String {
             controller = MPRecommendViewController()
         case .Rank:
             controller = MPRankViewController()
-        case .Search:
+        case .Playing:
             controller = MPSearchViewController()
         }
         controller.navigationItem.title = self.rawValue

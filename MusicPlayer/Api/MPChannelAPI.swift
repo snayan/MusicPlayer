@@ -154,7 +154,6 @@ struct MPChannelAPI {
                 })
                 handler(result, nil)
             } catch {
-                debugPrint(error)
                 handler(nil, error)
             }
         })

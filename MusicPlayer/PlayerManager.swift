@@ -52,6 +52,9 @@ struct SongQueue {
     }
     
     mutating func popSong() -> Song? {
+        guard list.count > 0 else {
+            return nil
+        }
         return list.removeFirst()
     }
     
@@ -295,7 +298,7 @@ extension PlayerManager {
         case playing
     }
     
-    enum PlayError: Error {
+    enum PlayError: String, Error {
         case notFoundSong
         case notFoundAsset
         case canNotPlayable

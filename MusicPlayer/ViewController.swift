@@ -11,12 +11,14 @@ import SnapKit
 
 class ViewController: UITabBarController {
     
+    var playingImageView: UIImageView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.restorationIdentifier = "MainTabBarController"
         self.view.backgroundColor = UIColor(named: "bgColor")
-        self.viewControllers = [MPTabBarItemEnum.Recommend, MPTabBarItemEnum.Rank, MPTabBarItemEnum.Search].map { MPTabBarChildViewController(type: $0) }
-        self.selectedIndex = 0
+        setupPlayingImage()
+        setupControllers()
     }
 
     override func didReceiveMemoryWarning() {
@@ -35,7 +37,38 @@ class ViewController: UITabBarController {
             self.selectedIndex = coder.decodeInteger(forKey: "selectedIndex")
         }
     }
+    
+    private func setupPlayingImage() {
+        let height = tabBar.frame.height - 8
+        let tabBarWidth = tabBar.frame.width
+        playingImageView = UIImageView()
+        playingImageView.frame = CGRect(x: (tabBarWidth - height)/2 , y: (tabBar.frame.height - height)/2, width: height, height: height)
+        playingImageView.backgroundColor = UIColor.red
+        playingImageView.layer.cornerRadius = height/2
+        playingImageView.clipsToBounds = true
+        playingImageView.downloaded(from: PlayerManager.shared.currentSong?.album?.picture, useFallImage: UIImage(named: "defaultSongPic"))
+        tabBar.addSubview(playingImageView)
+    }
+    
+    private func setupControllers() {
+        let recommendController = MPTabBarChildViewController(type: .Recommend)
+        let rankController = MPTabBarChildViewController(type: .Rank)
+        let playingController = UIViewController()
+        viewControllers = [recommendController, playingController, rankController]
+        selectedIndex = 0
+        delegate = self
+    }
+    
+}
 
-
+extension ViewController: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        if viewController === viewControllers?[1] {
+            let vc =  MPPlayViewController(data: PlayerManager.shared.currentSong, autoPlay: false)
+            self.present(vc, animated: true, completion: nil)
+            return false
+        }
+        return true
+    }
 }
 
