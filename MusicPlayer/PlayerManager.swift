@@ -81,7 +81,7 @@ struct SongQueue {
     }
 }
 
-class PlayerManager: PlayerDelegate {
+class PlayerManager: NSObject, PlayerDelegate {
     
     internal var autoPlayNextAtSongEnd: Bool
     internal weak var delegate: PlayerDelegate?
@@ -90,7 +90,7 @@ class PlayerManager: PlayerDelegate {
     private(set) var queue: SongQueue
     private(set) var currentSong: MPChannelData.Song? {
         didSet {
-            delegate?.play(songChanged: currentSong)
+            delegate?.play(self, songChanged: currentSong)
             resetPlayingSongState()
             prepareMedia()
             updateNowPlayingInfoCenter()
@@ -111,13 +111,13 @@ class PlayerManager: PlayerDelegate {
             } else {
                 clearTimeObserver()
             }
-            delegate?.play(cuurentSong: currentSong, statusChanged: status)
+            delegate?.play(self, statusChanged: status)
             
         }
     }
     private(set) var totalTime: CMTime? {
         didSet {
-            self.delegate?.play(currentSong: currentSong, totalTimeChanged: totalTime)
+            self.delegate?.play(self, totalTimeChanged: totalTime)
             self.clearEndObserver()
             self.addEndObserver()
         }
@@ -128,13 +128,16 @@ class PlayerManager: PlayerDelegate {
     private var interval = CMTime(seconds: 1, preferredTimescale: CMTimeScale(1000))
     private var timeObserverToken: Any?
     private var endObserverToken: Any?
+    private var playerStatusContext = 1
     
-    init() {
+    override init() {
         status = .sleep
         autoPlayNextAtSongEnd = true
         player = AVPlayer()
         queue = SongQueue()
+        super.init()
         delegate = self
+        player.addObserver(self, forKeyPath: #keyPath(AVPlayer.status), options: [.old, .new], context: &playerStatusContext)
     }
     
     deinit {
@@ -144,6 +147,26 @@ class PlayerManager: PlayerDelegate {
             cache[key] = nil
         }
         queue.clearList()
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard context == &playerStatusContext else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+            return
+        }
+        if keyPath == #keyPath(AVPlayer.status) {
+            let status: AVPlayer.Status
+            if let statusNumber = change?[NSKeyValueChangeKey.newKey] as? Int {
+                status = AVPlayer.Status(rawValue: statusNumber)!
+            } else {
+                status = .unknown
+            }
+            if status == .failed {
+                // 必须重新创建player
+                delegate?.play(self, withOccureError: .playerError)
+                player = AVPlayer()
+            }
+        }
     }
     
     func clearAssets() {
@@ -246,13 +269,11 @@ class PlayerManager: PlayerDelegate {
     
     private func prepareMedia() {
         guard let currentSong = currentSong else {
-            status = .sleep
-            delegate?.play(currentSong: nil, withOccureError: PlayError.notFoundSong)
+            delegate?.play(self, withOccureError: .notFoundSong)
             return
         }
         guard let url = currentSong.mediaUrl, let asset = cache[url] else {
-            status = .sleep
-            delegate?.play(currentSong: currentSong, withOccureError: PlayError.notFoundAsset)
+            delegate?.play(self, withOccureError: .notFoundAsset)
             return
         }
         let requiredFileds: [String] = ["playable", "duration"]
@@ -261,14 +282,12 @@ class PlayerManager: PlayerDelegate {
             for filed in requiredFileds {
                 let status = asset.statusOfValue(forKey: filed, error: &error)
                 if status == AVKeyValueStatus.failed {
-                    self.status = .sleep
-                    self.delegate?.play(currentSong: self.currentSong, withOccureError: PlayError.loadFailed)
+                    self.delegate?.play(self, withOccureError: .loadFailed)
                     return
                 }
             }
             if !asset.isPlayable {
-                self.status = .sleep
-                self.delegate?.play(currentSong: self.currentSong, withOccureError: PlayError.canNotPlayable)
+                self.delegate?.play(self, withOccureError: .canNotPlayable)
                 return
             }
             self.player.replaceCurrentItem(with: AVPlayerItem(asset: asset))
@@ -280,12 +299,13 @@ class PlayerManager: PlayerDelegate {
     }
     
     private func playHandler(currentTime: CMTime) {
-        if let currentSong = currentSong {
-            delegate?.play(currentSong: currentSong, currentTimeChanged: currentTime)
-        }
+        delegate?.play(self, currentTimeChanged: currentTime)
     }
     
     private func resetPlayingSongState() {
+        player.currentItem?.asset.cancelLoading()
+        player.currentItem?.cancelPendingSeeks()
+        player.cancelPendingPrerolls()
         player.replaceCurrentItem(with: nil)
         playHandler(currentTime: CMTime.zero)
         totalTime = CMTime.zero
@@ -304,6 +324,7 @@ extension PlayerManager {
         case notFoundAsset
         case canNotPlayable
         case loadFailed
+        case playerError
     }
     
     static let shared = PlayerManager()
@@ -348,13 +369,13 @@ extension PlayerManager {
         switch reason {
             case .newDeviceAvailable:
                 let session = AVAudioSession.sharedInstance()
-                for output in session.currentRoute.outputs where convertFromAVAudioSessionPort(output.portType) == convertFromAVAudioSessionPort(AVAudioSession.Port.headphones) {
+                for output in session.currentRoute.outputs where output.portType == AVAudioSession.Port.headphones {
                     // 耳机连接
                     break
                 }
             case .oldDeviceUnavailable:
                 if let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription {
-                    for output in previousRoute.outputs where convertFromAVAudioSessionPort(output.portType) == convertFromAVAudioSessionPort(AVAudioSession.Port.headphones) {
+                    for output in previousRoute.outputs where output.portType == AVAudioSession.Port.headphones {
                         pause()
                         break
                     }
@@ -402,9 +423,3 @@ extension PlayerManager {
     }
 }
 
-
-
-// Helper function inserted by Swift 4.2 migrator.
-fileprivate func convertFromAVAudioSessionPort(_ input: AVAudioSession.Port) -> String {
-	return input.rawValue
-}

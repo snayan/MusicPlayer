@@ -88,6 +88,7 @@ fileprivate class MPPlayContentViewController: UIViewController {
         if let data = data, PlayerManager.shared.currentSong != data {
             PlayerManager.shared.inset(withSong: data, atHead: true)
             if autoPlay {
+                PlayerManager.shared.next()
                 PlayerManager.shared.play()
             }
         } else {
@@ -97,6 +98,7 @@ fileprivate class MPPlayContentViewController: UIViewController {
 
     
     fileprivate func updateContentifNeed() {
+        let status = PlayerManager.shared.status
         song.text = data?.name
         backgroundImage.downloaded(from: data?.mediaPicture)
         contentView.singerPicture = data?.mediaPicture
@@ -104,6 +106,7 @@ fileprivate class MPPlayContentViewController: UIViewController {
             let fisrtSinger = singerData[0]
             singer.text = fisrtSinger.name
         }
+        contentView.playBtn.setBackgroundImage(UIImage(named: status == .playing ? "playIcon" : "pauseIcon")?.withRenderingMode(.alwaysTemplate), for: .normal);
         if data == nil {
             singer.text = nil
             contentView.timeSlider.isEnabled = false
@@ -161,6 +164,7 @@ extension MPPlayContentViewController {
     
     func observePlayerSongChanged() {
         NotificationCenter.default.addObserver(self, selector: #selector(MPPlayContentViewController.playerSongChanged), name: Notification.Name.player.songChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MPPlayContentViewController.playerSongWithError), name: Notification.Name.player.errorOccurred, object: nil)
     }
     
     func removeObserver() {
@@ -172,6 +176,14 @@ extension MPPlayContentViewController {
         let song = userInfo?["value"] as? Song
         DispatchQueue.main.async {
             self.data = song
+        }
+    }
+    
+    @objc func playerSongWithError(notification: Notification) {
+        let userInfo = notification.userInfo
+        let error = userInfo?["value"] as? PlayerManager.PlayError
+        DispatchQueue.main.async {
+            self.showPlayErrorAlter(error: error, buttonHandler: nil)
         }
     }
 }
