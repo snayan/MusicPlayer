@@ -137,6 +137,7 @@ class PlayerManager: NSObject, PlayerDelegate {
         queue = SongQueue()
         super.init()
         delegate = self
+        setupRemoteTransportControls()
         player.addObserver(self, forKeyPath: #keyPath(AVPlayer.status), options: [.old, .new], context: &playerStatusContext)
     }
     
@@ -387,30 +388,75 @@ extension PlayerManager {
 
 extension PlayerManager {
     
+    private func setupRemoteTransportControls() {
+        // Get the shared MPRemoteCommandCenter
+        let commandCenter = MPRemoteCommandCenter.shared()
+        commandCenter.playCommand.isEnabled = true
+        commandCenter.playCommand.isEnabled = true
+        commandCenter.nextTrackCommand.isEnabled = true
+        commandCenter.previousTrackCommand.isEnabled = true
+        
+        // Add handler for Play Command
+        commandCenter.playCommand.addTarget { [unowned self] _ in
+            if self.currentSong == nil {
+                return .noActionableNowPlayingItem
+            } else if self.status == .playing {
+                return .commandFailed
+            } else {
+                self.play()
+                return .success
+            }
+        }
+        
+        // Add handler for Pause Command
+        commandCenter.pauseCommand.addTarget { [unowned self] _ in
+            if self.currentSong == nil {
+                return .noActionableNowPlayingItem
+            } else if self.status == .sleep {
+                return .commandFailed
+            } else {
+                self.pause()
+                return .success
+            }
+        }
+        
+        commandCenter.nextTrackCommand.addTarget { [unowned self] _ in
+            self.next()
+            return .success
+        }
+        
+        commandCenter.previousTrackCommand.addTarget { [unowned self] _ in
+            self.previous()
+            return .success
+        }
+    }
+    
     private func updateNowPlayingInfoCenter(artwork: UIImage? = nil, hasFetch: Bool = false) {
         guard let currentSong = currentSong else {
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
             return
         }
         var singer: MPChannelData.Singer?
-        var nowPlayingInfo: [String: Any] = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
         if let singers = currentSong.singer, singers.count > 0 {
             singer = singers[0]
         }
-        if artwork == nil, hasFetch == false, let singer = singer, let picture = singer.picture, let url = URL(string: picture) {
+        if artwork == nil, hasFetch == false, let picture = currentSong.mediaPicture, let url = URL.ATS(string: picture) {
             MPBaseURLSession.getImage(withUrl: url, completionHandler: { [unowned self] image, error in
                 self.updateNowPlayingInfoCenter(artwork: image, hasFetch: true)
             })
             return
         }
+        var nowPlayingInfo: [String: Any] = [:]
         nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackQueueCount] = queue.list.count
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentItem?.currentTime().seconds
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.currentItem?.asset.duration.seconds
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.rate
         nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = currentSong.album?.title
         nowPlayingInfo[MPMediaItemPropertyAlbumArtist] = singer?.name
         nowPlayingInfo[MPMediaItemPropertyArtist] = singer?.title
         nowPlayingInfo[MPMediaItemPropertyAssetURL] = currentSong.mediaUrl != nil ? URL(string: currentSong.mediaUrl!) : nil
         nowPlayingInfo[MPMediaItemPropertyIsCloudItem] = false
-//        nowPlayingInfo[MPMediaItemPropertyMediaType] = MPMediaType(rawValue: 1)
         nowPlayingInfo[MPMediaItemPropertyTitle] = currentSong.title
         if let artwork = artwork {
             let itemArtwork = MPMediaItemArtwork(boundsSize: artwork.size, requestHandler: {
@@ -421,5 +467,6 @@ extension PlayerManager {
         }
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
+    
 }
 
