@@ -82,7 +82,9 @@ class ViewController: UITabBarController {
                 self.playingImageView.transform = self.playingImageView.transform.rotated(by: CGFloat.pi)
             }, completion: { finalPosition in
                 self.animator = nil
-                self.startRotateImage()
+                if UIApplication.shared.applicationState == UIApplication.State.active {
+                    self.startRotateImage()
+                }
             })
         } else {
             animator!.startAnimation()
