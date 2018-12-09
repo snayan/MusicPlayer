@@ -17,6 +17,7 @@
 		E02D586B219930FB00208FE2 /* MPChannelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02D586A219930FB00208FE2 /* MPChannelViewController.swift */; };
 		E042437C21B915E700447846 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = E042437B21B915E700447846 /* Notification.swift */; };
 		E042437F21B91D3500447846 /* time.swift in Sources */ = {isa = PBXBuildFile; fileRef = E042437E21B91D3500447846 /* time.swift */; };
+		E042438121BBA86200447846 /* MPWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E042438021BBA86200447846 /* MPWebViewController.swift */; };
 		E04AA3572196D9B500A40CFB /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04AA3562196D9B500A40CFB /* URL.swift */; };
 		E04AA3592197FD3700A40CFB /* MPRankTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04AA3582197FD3700A40CFB /* MPRankTableViewCell.swift */; };
 		E04AA35B2198034A00A40CFB /* MPRankData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E04AA35A2198034A00A40CFB /* MPRankData.swift */; };
@@ -88,6 +89,7 @@
 		E02D586A219930FB00208FE2 /* MPChannelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPChannelViewController.swift; sourceTree = "<group>"; };
 		E042437B21B915E700447846 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		E042437E21B91D3500447846 /* time.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = time.swift; sourceTree = "<group>"; };
+		E042438021BBA86200447846 /* MPWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPWebViewController.swift; sourceTree = "<group>"; };
 		E04AA3562196D9B500A40CFB /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		E04AA3582197FD3700A40CFB /* MPRankTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPRankTableViewCell.swift; sourceTree = "<group>"; };
 		E04AA35A2198034A00A40CFB /* MPRankData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPRankData.swift; sourceTree = "<group>"; };
@@ -265,6 +267,7 @@
 				E082715A219675E0000E8CCD /* MPRankViewController.swift */,
 				E02D586A219930FB00208FE2 /* MPChannelViewController.swift */,
 				E00323EA21A014F300BF96BE /* MPPlayViewController.swift */,
+				E042438021BBA86200447846 /* MPWebViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -570,6 +573,7 @@
 				E042437F21B91D3500447846 /* time.swift in Sources */,
 				E05C81A521A26EEB00F723D9 /* MPPlayContentView.swift in Sources */,
 				E082714721967518000E8CCD /* MPImageSlideshowView.swift in Sources */,
+				E042438121BBA86200447846 /* MPWebViewController.swift in Sources */,
 				E082715B219675E0000E8CCD /* MPRankViewController.swift in Sources */,
 				E08271592196759B000E8CCD /* MPSearchViewController.swift in Sources */,
 				E0F7188021AD6C9E00D39984 /* PlayerDelegate.swift in Sources */,

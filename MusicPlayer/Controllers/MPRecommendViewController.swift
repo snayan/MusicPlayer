@@ -20,6 +20,7 @@ class MPRecommendViewController: UICollectionViewController {
             }
         }
     }
+    lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(MPRecommendViewController.handleHeaderTap)  )
     
     convenience init() {
         let layout = UICollectionViewFlowLayout()
@@ -34,7 +35,7 @@ class MPRecommendViewController: UICollectionViewController {
         requestData()
     }
     
-    fileprivate func requestData() {
+    private func requestData() {
         showLoading(true)
         api.getHomeData { [unowned self] data, error in
             
@@ -56,7 +57,7 @@ class MPRecommendViewController: UICollectionViewController {
         }
     }
     
-    fileprivate func setup() {
+    private func setup() {
         if let collectionView = collectionView {
             collectionView.delegate = self
             collectionView.backgroundColor = UIColor(named: "bgColor")
@@ -69,7 +70,7 @@ class MPRecommendViewController: UICollectionViewController {
         }
     }
     
-    fileprivate func getCellData(at indexPath: IndexPath) -> CellData? {
+    private func getCellData(at indexPath: IndexPath) -> CellData? {
         guard isSongSection(at: indexPath)  else {
             return nil
         }
@@ -86,28 +87,36 @@ class MPRecommendViewController: UICollectionViewController {
         }
     }
     
-    fileprivate func isHeader(at indexPath: IndexPath) -> Bool {
+    private func isHeader(at indexPath: IndexPath) -> Bool {
         return indexPath == IndexPath(item: 0, section: 0)
     }
     
-    fileprivate func isHeader(at section: Int) -> Bool {
+    private func isHeader(at section: Int) -> Bool {
         return section == 0
     }
     
-    fileprivate func isFooter(at indexPath: IndexPath) -> Bool {
+    private func isFooter(at indexPath: IndexPath) -> Bool {
         return indexPath == IndexPath(item: 0, section: 3)
     }
     
-    fileprivate func isFooter(at section: Int) -> Bool {
+    private func isFooter(at section: Int) -> Bool {
         return section == 3
     }
     
-    fileprivate func isSongSection(at indexPath: IndexPath) -> Bool {
+    private func isSongSection(at indexPath: IndexPath) -> Bool {
         return !isHeader(at: indexPath) && !isFooter(at: indexPath)
     }
     
-    fileprivate func isSongSection(at section: Int) -> Bool {
+    private func isSongSection(at section: Int) -> Bool {
         return !isHeader(at: section) && !isFooter(at: section)
+    }
+    
+    @objc private func handleHeaderTap(sender: UITapGestureRecognizer) {
+        if sender.state == .ended, let view = sender.view as? MPImageSlideshowCell {
+            let webView = MPWebViewController(src: view.getCurrentWebViewSrc())
+            webView.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(webView, animated: true)
+        }
     }
     
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -135,7 +144,8 @@ class MPRecommendViewController: UICollectionViewController {
         
         if isHeader(at: indexPath) {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MPImageSlideshowCell.reuseIdentifier, for: indexPath) as! MPImageSlideshowCell
-            cell.data = data.slider?.map(){$0.picUrl}
+            cell.data = data.slider
+            cell.addGestureRecognizer(tapGesture)
             cell.setNeedsLayout()
             return cell
         } else if isSongSection(at: indexPath) {

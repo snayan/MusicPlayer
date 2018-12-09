@@ -70,7 +70,7 @@ fileprivate class MPPlayContentViewController: UIViewController {
         self.data = data
         super.init(nibName: nil, bundle: nil)
         navigationItem.titleView = titleView
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(tapDismiss))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "downArrowIcon"), style: .done, target: self, action: #selector(tapDismiss))
     }
     
     required init?(coder aDecoder: NSCoder) {

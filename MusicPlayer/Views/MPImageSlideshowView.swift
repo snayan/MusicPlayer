@@ -121,13 +121,6 @@ class MPImageSlideshowView: UIView {
     
     weak var delegate: MPImageSlideshowDelegate?
     
-    var data1: [UIImage] = [] {
-        didSet {
-            scrollView.isScrollEnabled = data1.count > 1
-            indicator.numberOfPages = data1.count
-            reloadScrollView()
-        }
-    }
     var data: [String] = [] {
         didSet {
             scrollView.isScrollEnabled = data.count > 1

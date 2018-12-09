@@ -67,6 +67,34 @@ extension UIViewController {
         }
         showAlter(title: "播放失败", message: "歌曲信息缺失，无法播放", configurateAction: configurate, completion: nil)
     }
+    
+    func showErrorWebPageAlter(retryHandler: (() -> Void)?, backHandler: (() -> Void)? ) {
+        let configurate = { () -> [UIAlertAction] in
+            return [UIAlertAction(title: "刷新", style: .default, handler: { _ in
+                if let handler = retryHandler {
+                    handler()
+                }
+            }), UIAlertAction(title: "返回", style: .cancel, handler: { _ in
+                if let handler = backHandler {
+                    handler()
+                }
+            })]
+        }
+        showAlter(title: "页面异常", message: "页面出现异常，请重新刷新页面或者返回", configurateAction: configurate, completion: nil)
+    }
+    
+    func showErrorMessagAlter(error: String) {
+        let configurate = { () -> [UIAlertAction] in
+            return [UIAlertAction(title: "好吧", style: .cancel, handler: nil)]
+        }
+        showAlter(title: "出错啦", message: error, configurateAction: configurate, completion: nil)
+    }
+    
+    func showErrorMessagAlter(error: Error) {
+        showErrorMessagAlter(error: error.localizedDescription)
+    }
+    
+
 }
 
 

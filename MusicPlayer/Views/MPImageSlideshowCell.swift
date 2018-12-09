@@ -13,16 +13,16 @@ class MPImageSlideshowCell: UICollectionViewCell {
     
     static let reuseIdentifier = "MPImageSlideshowCell"
     
-    var data: [String?]? {
+    var data: [MPRecommendHomeData.SlideData?]? {
         didSet {
-            self.slideshow.data = filterData(from: data)
+            self.slideshow.data = filterData(from: data?.map { $0?.picUrl } )
         }
     }
     
-    lazy var slideshow: MPImageSlideshowView = {
+    lazy var slideshow: MPImageSlideshowView = { [unowned self] in
         let slideshow = MPImageSlideshowView()
         slideshow.interval = 5
-        slideshow.data = filterData(from: data)
+        slideshow.data = filterData(from: filterData(from: data?.map { $0?.picUrl } ))
         return slideshow
     }()
     
@@ -36,18 +36,26 @@ class MPImageSlideshowCell: UICollectionViewCell {
         setup()
     }
     
-    fileprivate func setup() {
+    func getCurrentWebViewSrc() -> String? {
+        let index = slideshow.currentPage
+        if let currentData = data?[index] {
+            return currentData.linkUrl
+        }
+        return nil
+    }
+    
+    private func setup() {
         addSubview(slideshow)
         makeConstraints()
     }
     
-    fileprivate func makeConstraints() {
+    private func makeConstraints() {
         slideshow.snp.makeConstraints{ make in
             make.edges.equalToSuperview()
         }
     }
     
-    fileprivate func filterData(from data: [String?]?) -> [String] {
+    private func filterData(from data: [String?]?) -> [String] {
         var result: [String] = []
         if let data = data {
             for url in data {
