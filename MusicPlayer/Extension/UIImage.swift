@@ -11,15 +11,20 @@ import UIKit
 
 extension UIImage {
     
-    static func download(from src: String?) -> UIImage? {
-        var instance: UIImage?
-        if let src = src, let url = URL.ATS(string: src) {
-            MPBaseURLSession.getImage(withUrl: url, completionHandler: {
-                image, _ in
-                instance = image
-            })
+    enum ErrorType: Error {
+        case invalidURL
+    }
+    
+    static func download(fromSrc src: String, completionHandler handler: @escaping (_: UIImage?, _: Error?) -> Void) {
+        guard let url = URL.ATS(string: src) else {
+            handler(nil, ErrorType.invalidURL)
+            return
         }
-        return instance
+        download(fromURL: url, completionHandler: handler)
+    }
+    
+    static func download(fromURL url: URL, completionHandler handler: @escaping (_: UIImage?, _: Error?) -> Void) {
+        MPBaseURLSession.getImage(withUrl: url, completionHandler: handler)
     }
     
     func resizedImage(_ size: CGSize) -> UIImage? {
@@ -46,4 +51,5 @@ extension UIImage {
         let resized = resizedImage(newSize)
         return resized
     }
+
 }

@@ -13,6 +13,7 @@ import SnapKit
 class MPWebViewController: UIViewController {
     
     var src: String?
+    var bridge: Bridge?
     var webView: WKWebView!
     var isShowProgress: Bool = false
     lazy var configuration: WKWebViewConfiguration = {
@@ -50,6 +51,17 @@ class MPWebViewController: UIViewController {
     }
 
     override func loadView() {
+        
+        // init bridge
+        if let bridgePath = Bundle.main.path(forResource: "bridge", ofType: "js") {
+            let bridgeUrl = URL(fileURLWithPath: bridgePath)
+            self.bridge = Bridge(url: bridgeUrl, controller: self)
+        }
+        if let bridge = bridge, !WKWebView.handlesURLScheme(Bridge.scheme) {
+            configuration.setURLSchemeHandler(bridge, forURLScheme: Bridge.scheme)
+        }
+        
+        // init webView
         webView = WKWebView(frame: CGRect.zero, configuration: configuration)
         webView.scrollView.backgroundColor = UIColor(named: "bgColor")
         webView.uiDelegate = self
@@ -72,12 +84,15 @@ class MPWebViewController: UIViewController {
         }
         
         navigationItem.leftBarButtonItem = backButton
-        
-//        let url = URL(string: "http://localhost:9005/")
-        if let src = src, let url = URL(string: src) {
-            let request = URLRequest(url: url)
-            webView.load(request)
-        }
+
+        let url = URL(string: "http://localhost:9005/")
+        let request = URLRequest(url: url!)
+        self.webView.load(request)
+        //            if let src = self.src, let url = URL(string: src) {
+        //                let request = URLRequest(url: url)
+        //                self.webView.load(request)
+        //            }
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -108,10 +123,27 @@ class MPWebViewController: UIViewController {
     }
     
     @objc private func handleBackTap() {
-        if webView.canGoBack {
-            webView.goBack()
-        } else {
-            navigationController?.popViewController(animated: true)
+        bridge?.doRegisterHandler(webView, name: Bridge.RegisterEvent.onBackClickEvent, params: "") { data, error in
+            guard error == nil else {
+                self.showErrorMessagAlter(error: error!)
+                return
+            }
+            guard let single = data as? Bool  else {
+                self.showErrorMessagAlter(error: "convert data to bool fail")
+                return
+            }
+            if single {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
+    }
+    
+    private func initBridge() {
+        bridge?.initialize(webView){ _, error in
+            guard error == nil else {
+                self.handlerBridgeError(error)
+                return
+            }
         }
     }
     
@@ -124,6 +156,14 @@ class MPWebViewController: UIViewController {
             [unowned self] in
             self.progressView.alpha = show ? 1 : 0
             }, completion: nil)
+    }
+    
+    private func handlerBridgeError(_ error: Error?) {
+        if let error = error {
+            self.showErrorMessagAlter(error: error)
+        } else {
+            self.showErrorMessagAlter(error: "bridge error!")
+        }
     }
     
     deinit {
@@ -139,7 +179,8 @@ extension MPWebViewController: WKUIDelegate {
     func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
         showAlter(title: nil, message: message, configurateAction: {
             return [UIAlertAction(title: "确定", style: .default, handler: nil)]
-        }, completion: completionHandler)
+        }, completion: nil)
+        completionHandler()
     }
 }
 
@@ -153,11 +194,12 @@ extension MPWebViewController: WKNavigationDelegate {
         showErrorMessagAlter(error: error)
     }
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        showErrorMessagAlter(error: error)
+//        showErrorMessagAlter(error: error)
          debugPrint(error)
     }
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         showProgress(show: false)
+        self.initBridge()
     }
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         showErrorWebPageAlter(retryHandler: {
@@ -167,3 +209,5 @@ extension MPWebViewController: WKNavigationDelegate {
         })
     }
 }
+
+

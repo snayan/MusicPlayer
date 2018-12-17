@@ -48,6 +48,10 @@
 		E0827167219676D1000E8CCD /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0827166219676D1000E8CCD /* UIImageView.swift */; };
 		E0827169219676EA000E8CCD /* MPBaseURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0827168219676EA000E8CCD /* MPBaseURLSession.swift */; };
 		E082716B219676F3000E8CCD /* MPRecommendAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E082716A219676F3000E8CCD /* MPRecommendAPI.swift */; };
+		E0BFA13C21BFE3AE0001A424 /* bridge.js in Resources */ = {isa = PBXBuildFile; fileRef = E0BFA13B21BFE3AE0001A424 /* bridge.js */; };
+		E0BFA13E21BFE6560001A424 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BFA13D21BFE6560001A424 /* Bridge.swift */; };
+		E0BFA14221C14F6B0001A424 /* CmdHandlerDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0BFA14121C14F6B0001A424 /* CmdHandlerDictionary.swift */; };
+		E0C79A1F21C63E4B0035782F /* LocaleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0C79A1E21C63E4B0035782F /* LocaleStore.swift */; };
 		E0DD947521B7E4B8009A6E45 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0DD947421B7E4B8009A6E45 /* UIViewController.swift */; };
 		E0DD947721B8C1C3009A6E45 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0DD947621B8C1C3009A6E45 /* UIImage.swift */; };
 		E0F7187C21ABA9AD00D39984 /* PlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F7187B21ABA9AD00D39984 /* PlayerManager.swift */; };
@@ -126,6 +130,10 @@
 		E0827166219676D1000E8CCD /* UIImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
 		E0827168219676EA000E8CCD /* MPBaseURLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPBaseURLSession.swift; sourceTree = "<group>"; };
 		E082716A219676F3000E8CCD /* MPRecommendAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPRecommendAPI.swift; sourceTree = "<group>"; };
+		E0BFA13B21BFE3AE0001A424 /* bridge.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = bridge.js; sourceTree = "<group>"; };
+		E0BFA13D21BFE6560001A424 /* Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bridge.swift; sourceTree = "<group>"; };
+		E0BFA14121C14F6B0001A424 /* CmdHandlerDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CmdHandlerDictionary.swift; sourceTree = "<group>"; };
+		E0C79A1E21C63E4B0035782F /* LocaleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocaleStore.swift; sourceTree = "<group>"; };
 		E0DD947421B7E4B8009A6E45 /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		E0DD947621B8C1C3009A6E45 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		E0F7187B21ABA9AD00D39984 /* PlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerManager.swift; sourceTree = "<group>"; };
@@ -175,6 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				E042437E21B91D3500447846 /* time.swift */,
+				E0C79A1E21C63E4B0035782F /* LocaleStore.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -204,6 +213,7 @@
 		E055385F2195B9E600F6802D /* MusicPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				E0BFA13A21BFE3300001A424 /* bridge */,
 				E042437D21B91D0500447846 /* Utils */,
 				E08271452196746D000E8CCD /* Api */,
 				E082714421967463000E8CCD /* Extension */,
@@ -322,6 +332,16 @@
 				E00323E8219FC87E00BF96BE /* MPChannelAPI.swift */,
 			);
 			path = Api;
+			sourceTree = "<group>";
+		};
+		E0BFA13A21BFE3300001A424 /* bridge */ = {
+			isa = PBXGroup;
+			children = (
+				E0BFA13B21BFE3AE0001A424 /* bridge.js */,
+				E0BFA13D21BFE6560001A424 /* Bridge.swift */,
+				E0BFA14121C14F6B0001A424 /* CmdHandlerDictionary.swift */,
+			);
+			path = bridge;
 			sourceTree = "<group>";
 		};
 		EF4479A8F53C4E9BAFD001A1 /* Pods */ = {
@@ -454,6 +474,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E055386B2195B9E700F6802D /* LaunchScreen.storyboard in Resources */,
+				E0BFA13C21BFE3AE0001A424 /* bridge.js in Resources */,
 				E05538682195B9E700F6802D /* Assets.xcassets in Resources */,
 				E05538662195B9E600F6802D /* Main.storyboard in Resources */,
 			);
@@ -557,6 +578,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E0C79A1F21C63E4B0035782F /* LocaleStore.swift in Sources */,
 				E082715721967592000E8CCD /* MPTabBarChildViewController.swift in Sources */,
 				E04AA35B2198034A00A40CFB /* MPRankData.swift in Sources */,
 				E00323E9219FC87E00BF96BE /* MPChannelAPI.swift in Sources */,
@@ -565,6 +587,7 @@
 				E00323EB21A014F300BF96BE /* MPPlayViewController.swift in Sources */,
 				E0DD947721B8C1C3009A6E45 /* UIImage.swift in Sources */,
 				E00323E5219DAA0C00BF96BE /* MPChannelViewCell.swift in Sources */,
+				E0BFA13E21BFE6560001A424 /* Bridge.swift in Sources */,
 				E042437C21B915E700447846 /* Notification.swift in Sources */,
 				E04AA3572196D9B500A40CFB /* URL.swift in Sources */,
 				E0DD947521B7E4B8009A6E45 /* UIViewController.swift in Sources */,
@@ -577,6 +600,7 @@
 				E082715B219675E0000E8CCD /* MPRankViewController.swift in Sources */,
 				E08271592196759B000E8CCD /* MPSearchViewController.swift in Sources */,
 				E0F7188021AD6C9E00D39984 /* PlayerDelegate.swift in Sources */,
+				E0BFA14221C14F6B0001A424 /* CmdHandlerDictionary.swift in Sources */,
 				E0827169219676EA000E8CCD /* MPBaseURLSession.swift in Sources */,
 				E082715F21967659000E8CCD /* MPRecommendData.swift in Sources */,
 				E0F7187C21ABA9AD00D39984 /* PlayerManager.swift in Sources */,

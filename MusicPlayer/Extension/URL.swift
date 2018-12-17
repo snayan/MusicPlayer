@@ -14,4 +14,8 @@ extension URL {
         let secureSrc = src.starts(with: "https") ? src : src.replacingOccurrences(of: "http", with: "https")
         return URL(string: secureSrc)
     }
+    
+    func base64EncodedString() -> String? {
+        return absoluteString.data(using: .utf8)?.base64EncodedString()
+    }
 }
