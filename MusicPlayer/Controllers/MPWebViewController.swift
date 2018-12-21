@@ -52,15 +52,6 @@ class MPWebViewController: UIViewController {
 
     override func loadView() {
         
-        // init bridge
-        if let bridgePath = Bundle.main.path(forResource: "bridge", ofType: "js") {
-            let bridgeUrl = URL(fileURLWithPath: bridgePath)
-            self.bridge = Bridge(url: bridgeUrl, controller: self)
-        }
-        if let bridge = bridge, !WKWebView.handlesURLScheme(Bridge.scheme) {
-            configuration.setURLSchemeHandler(bridge, forURLScheme: Bridge.scheme)
-        }
-        
         // init webView
         webView = WKWebView(frame: CGRect.zero, configuration: configuration)
         webView.scrollView.backgroundColor = UIColor(named: "bgColor")
@@ -70,6 +61,13 @@ class MPWebViewController: UIViewController {
         webView.customUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1"
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.title), options: .new, context: nil)
+        
+        // init bridge
+        if let bridgeScriptPath = Bundle.main.path(forResource: "bridge", ofType: "js") {
+            self.bridge = Bridge(webView: webView, scriptURL: URL(fileURLWithPath: bridgeScriptPath))
+            
+        }
+        
         view = webView
     }
 
@@ -84,6 +82,8 @@ class MPWebViewController: UIViewController {
         }
         
         navigationItem.leftBarButtonItem = backButton
+        
+        registerHandlerForWeb()
 
         let url = URL(string: "http://localhost:9005/")
         let request = URLRequest(url: url!)
@@ -92,6 +92,7 @@ class MPWebViewController: UIViewController {
         //                let request = URLRequest(url: url)
         //                self.webView.load(request)
         //            }
+        
 
     }
     
@@ -123,27 +124,18 @@ class MPWebViewController: UIViewController {
     }
     
     @objc private func handleBackTap() {
-        bridge?.doRegisterHandler(webView, name: Bridge.RegisterEvent.onBackClickEvent, params: "") { data, error in
-            guard error == nil else {
-                self.showErrorMessagAlter(error: error!)
-                return
+        if let bridge = self.bridge {
+            bridge.callHandler(WebHandlerCMD.onBackEvent) {
+                data in
+                guard let pop = data as? Bool else {
+                    return
+                }
+                if pop {
+                    self.navigationController?.popViewController(animated: true)
+                }
             }
-            guard let single = data as? Bool  else {
-                self.showErrorMessagAlter(error: "convert data to bool fail")
-                return
-            }
-            if single {
-                self.navigationController?.popViewController(animated: true)
-            }
-        }
-    }
-    
-    private func initBridge() {
-        bridge?.initialize(webView){ _, error in
-            guard error == nil else {
-                self.handlerBridgeError(error)
-                return
-            }
+        } else {
+            self.navigationController?.popViewController(animated: true)
         }
     }
     
@@ -168,6 +160,21 @@ class MPWebViewController: UIViewController {
     
     deinit {
         webView.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress))
+    }
+}
+
+extension MPWebViewController {
+    
+    func registerHandlerForWeb() {
+        
+        /// register configure page
+        bridge?.registerHandler(NativeHandlerCMD.configurePage) {
+            data, callback in
+            if let data = data, let title = data["title"] as? String {
+                self.title = title
+            }
+            callback(Bridge.HandlerResult(status: .success))
+        }
     }
 }
 
@@ -199,7 +206,24 @@ extension MPWebViewController: WKNavigationDelegate {
     }
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         showProgress(show: false)
-        self.initBridge()
+    }
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        guard webView == self.webView,
+            let bridge = self.bridge,
+            let url = navigationAction.request.url
+        else {
+            decisionHandler(.allow)
+            return
+        }
+        if bridge.isBridgeInjectURL(url) {
+            bridge.injectClientBridge(completionHandler: nil)
+            decisionHandler(.cancel)
+        } else if bridge.isBridgeMessageURL(url) {
+            bridge.flushMessageQueue()
+            decisionHandler(.cancel)
+        } else {
+            decisionHandler(.allow)
+        }
     }
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         showErrorWebPageAlter(retryHandler: {
@@ -209,5 +233,4 @@ extension MPWebViewController: WKNavigationDelegate {
         })
     }
 }
-
 
