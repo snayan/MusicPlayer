@@ -27,7 +27,7 @@
   function _noop() {}
 
   function _handlerMessageFromNative(dataString) {
-    console.log("receive message from native: " + dataString);
+    console.log('receive message from native: ' + dataString);
     let data = JSON.parse(dataString);
     if (data.responseId) {
       // callback after web call native
@@ -60,7 +60,7 @@
   function _fetchQueue() {
     var message = JSON.stringify(messageQueue);
     messageQueue = [];
-    console.log("send message to native : " + message)
+    console.log('send message to native : ' + message);
     return message;
   }
 
@@ -71,6 +71,10 @@
 
   function callHandler(name, data, callback) {
     uid = uid + 1;
+    if (typeof data === 'function') {
+      callback = data;
+      data = null;
+    }
     if (typeof callback !== 'function') {
       callback = _noop;
     }

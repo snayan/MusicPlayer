@@ -15,7 +15,7 @@ class Bridge {
     typealias RequestCallback = (_: Any?) -> Void
     typealias ResponseCallback = (_: HandlerResult) -> Void
     typealias EvaluateJavasriptHandler = (_: Data?, _ : Error?) -> Void
-    typealias RegisterHandlerType = (_ data: BridgeData?, _ callback: ResponseCallback) -> Void
+    typealias RegisterHandlerType = (_ data: BridgeData?, _ callback: @escaping ResponseCallback) -> Void
     
     
     let scheme = "https"

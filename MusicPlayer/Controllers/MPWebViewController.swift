@@ -53,6 +53,9 @@ class MPWebViewController: UIViewController {
     override func loadView() {
         
         // init webView
+        if !WKWebView.handlesURLScheme(ImageBridge.scheme) {
+            configuration.setURLSchemeHandler(ImageBridge(), forURLScheme: ImageBridge.scheme)
+        }
         webView = WKWebView(frame: CGRect.zero, configuration: configuration)
         webView.scrollView.backgroundColor = UIColor(named: "bgColor")
         webView.uiDelegate = self
@@ -65,7 +68,6 @@ class MPWebViewController: UIViewController {
         // init bridge
         if let bridgeScriptPath = Bundle.main.path(forResource: "bridge", ofType: "js") {
             self.bridge = Bridge(webView: webView, scriptURL: URL(fileURLWithPath: bridgeScriptPath))
-            
         }
         
         view = webView
@@ -175,6 +177,33 @@ extension MPWebViewController {
             }
             callback(Bridge.HandlerResult(status: .success))
         }
+        
+        /// register takeSnapshot
+        bridge?.registerHandler(NativeHandlerCMD.takeSnapshot) {
+            _, callback in
+            self.webView.takeSnapshot(with: nil) {
+                image, error in
+                let fileName = "snapshot"
+                guard let image = image, error == nil else {
+                    callback(Bridge.HandlerResult(status: .fail(-1)))
+                    return
+                }
+                
+                guard let _ = LocalStore.storeCacheImage(image, fileName: fileName) else {
+                    callback(Bridge.HandlerResult(status: .fail(-2)))
+                    return
+                }
+                
+                guard let src = ImageBridge.generateSRC(fileName: fileName) else {
+                    callback(Bridge.HandlerResult(status: .fail(-3)))
+                    return
+                }
+                var result = Bridge.HandlerResult(status: .success)
+                result.data = ["path": src]
+                callback(result)
+            }
+        }
+        
     }
 }
 

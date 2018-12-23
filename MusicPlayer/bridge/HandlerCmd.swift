@@ -13,6 +13,7 @@ struct Handler {
 
 struct NativeHandlerCMD {
     static let configurePage = "configurePage"
+    static let takeSnapshot = "takeSnapshot"
 }
 
 struct WebHandlerCMD {
