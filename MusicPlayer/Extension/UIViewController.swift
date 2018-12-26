@@ -104,7 +104,7 @@ extension UIViewController {
         DispatchQueue.main.async {
             let tag = 9999
             if show {
-                let loadingView = UIView(frame: self.view.frame)
+                let loadingView = UIView(frame: self.view.bounds)
                 let indicator = UIActivityIndicatorView(style: .whiteLarge)
                 loadingView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.2)
                 loadingView.tag = tag
