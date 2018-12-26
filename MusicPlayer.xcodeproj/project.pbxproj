@@ -31,6 +31,7 @@
 		E05538812195B9E700F6802D /* MusicPlayerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05538802195B9E700F6802D /* MusicPlayerUITests.swift */; };
 		E05C81A521A26EEB00F723D9 /* MPPlayContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05C81A421A26EEB00F723D9 /* MPPlayContentView.swift */; };
 		E05EB1CE21CF3BAF00FB1DE3 /* ImageBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05EB1CD21CF3BAF00FB1DE3 /* ImageBridge.swift */; };
+		E05EB1D021CF77AA00FB1DE3 /* MessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05EB1CF21CF77AA00FB1DE3 /* MessageHandler.swift */; };
 		E082714721967518000E8CCD /* MPImageSlideshowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E082714621967518000E8CCD /* MPImageSlideshowView.swift */; };
 		E082714921967526000E8CCD /* MPImageSlideshowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E082714821967526000E8CCD /* MPImageSlideshowCell.swift */; };
 		E082714B2196752F000E8CCD /* MPBoxSongViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E082714A2196752F000E8CCD /* MPBoxSongViewCell.swift */; };
@@ -114,6 +115,7 @@
 		E05538822195B9E700F6802D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E05C81A421A26EEB00F723D9 /* MPPlayContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPPlayContentView.swift; sourceTree = "<group>"; };
 		E05EB1CD21CF3BAF00FB1DE3 /* ImageBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBridge.swift; sourceTree = "<group>"; };
+		E05EB1CF21CF77AA00FB1DE3 /* MessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageHandler.swift; sourceTree = "<group>"; };
 		E082714621967518000E8CCD /* MPImageSlideshowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPImageSlideshowView.swift; sourceTree = "<group>"; };
 		E082714821967526000E8CCD /* MPImageSlideshowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPImageSlideshowCell.swift; sourceTree = "<group>"; };
 		E082714A2196752F000E8CCD /* MPBoxSongViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPBoxSongViewCell.swift; sourceTree = "<group>"; };
@@ -343,6 +345,7 @@
 				E0BFA13D21BFE6560001A424 /* Bridge.swift */,
 				E0BFA14121C14F6B0001A424 /* HandlerCmd.swift */,
 				E05EB1CD21CF3BAF00FB1DE3 /* ImageBridge.swift */,
+				E05EB1CF21CF77AA00FB1DE3 /* MessageHandler.swift */,
 			);
 			path = bridge;
 			sourceTree = "<group>";
@@ -600,6 +603,7 @@
 				E05EB1CE21CF3BAF00FB1DE3 /* ImageBridge.swift in Sources */,
 				E05C81A521A26EEB00F723D9 /* MPPlayContentView.swift in Sources */,
 				E082714721967518000E8CCD /* MPImageSlideshowView.swift in Sources */,
+				E05EB1D021CF77AA00FB1DE3 /* MessageHandler.swift in Sources */,
 				E042438121BBA86200447846 /* MPWebViewController.swift in Sources */,
 				E082715B219675E0000E8CCD /* MPRankViewController.swift in Sources */,
 				E08271592196759B000E8CCD /* MPSearchViewController.swift in Sources */,

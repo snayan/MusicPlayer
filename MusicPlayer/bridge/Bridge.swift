@@ -95,7 +95,7 @@ class Bridge {
         handler(message.data) {
             result in
             let responseMessage = ResponseMessage(responseData: result.getData(), responseId: message.callbackId)
-            self.sendToNative(responseMessage)
+            self.sendToWeb(responseMessage)
         }
        
     }
@@ -115,11 +115,14 @@ class Bridge {
         debugPrint(message)
     }
     
-    func sendToNative(_ message: MessageProtocol) {
+    func sendToWeb(_ message: MessageProtocol) {
         do {
             let data = try JSONSerialization.data(withJSONObject: message.serialization(), options: [])
             let result = String(data: data, encoding: .utf8) ?? ""
-            evaluateJavascript("\(clientBridgeName)._handlerMessageFromNative('\(result)')", completionHandler: { _,_ in
+            evaluateJavascript("\(clientBridgeName)._handlerMessageFromNative('\(result)')", completionHandler: { _, error in
+                if error != nil, let message = message as? RequestMessage {
+                    self.resumeNativeCallbackMessage(ResponseMessage(responseData: nil, responseId: message.callbackId))
+                }
             })
         } catch {
             debugPrint(error)
@@ -150,21 +153,21 @@ class Bridge {
     
     func callHandler(_ name: String) {
         let requestMessage = RequestMessage(handlerName: name, data: nil, callbackId: nil)
-        sendToNative(requestMessage)
+        sendToWeb(requestMessage)
     }
     
     func callHandler(_ name: String, callback: @escaping RequestCallback) {
         let uuid = UUID().uuidString
         requestHandlersMap[uuid] = callback
         let requestMessage = RequestMessage(handlerName: name, data: nil, callbackId: uuid)
-        sendToNative(requestMessage)
+        sendToWeb(requestMessage)
     }
     
     func callHandler(_ name: String, data: BridgeData, callback: @escaping RequestCallback) {
         let uuid = UUID().uuidString
         requestHandlersMap[uuid] = callback
         let requestMessage = RequestMessage(handlerName: name, data: data, callbackId: uuid)
-        sendToNative(requestMessage)
+        sendToWeb(requestMessage)
     }
     
     func registerHandler(_ name: String, executeBlock block: @escaping RegisterHandlerType) {

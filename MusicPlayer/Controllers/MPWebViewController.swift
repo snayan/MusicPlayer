@@ -16,6 +16,14 @@ class MPWebViewController: UIViewController {
     var bridge: Bridge?
     var webView: WKWebView!
     var isShowProgress: Bool = false
+    lazy var userContentController: WKUserContentController = {
+       [unowned self] in
+        let userContentController = WKUserContentController()
+        let userSctipt = WKUserScript(source: "window.aaa = 1", injectionTime: WKUserScriptInjectionTime.atDocumentStart, forMainFrameOnly: true)
+        userContentController.addUserScript(userSctipt)
+        userContentController.add(MessageHandler(), name: "test")
+        return userContentController
+    }()
     lazy var configuration: WKWebViewConfiguration = {
         [unowned self] in
         var configuration = WKWebViewConfiguration()
@@ -23,6 +31,7 @@ class MPWebViewController: UIViewController {
         configuration.ignoresViewportScaleLimits = false
         configuration.suppressesIncrementalRendering = false
         configuration.mediaTypesRequiringUserActionForPlayback = []
+//        configuration.userContentController = userContentController
         return configuration
     }()
     lazy var progressView: UIProgressView = {
@@ -87,13 +96,13 @@ class MPWebViewController: UIViewController {
         
         registerHandlerForWeb()
 
-        let url = URL(string: "http://localhost:9005/")
-        let request = URLRequest(url: url!)
-        self.webView.load(request)
-        //            if let src = self.src, let url = URL(string: src) {
-        //                let request = URLRequest(url: url)
-        //                self.webView.load(request)
-        //            }
+//        let url = URL(string: "http://localhost:9005/")
+//        let request = URLRequest(url: url!)
+//        self.webView.load(request)
+        if let src = self.src, let url = URL(string: src) {
+            let request = URLRequest(url: url)
+            self.webView.load(request)
+        }
         
 
     }
@@ -129,7 +138,7 @@ class MPWebViewController: UIViewController {
         if let bridge = self.bridge {
             bridge.callHandler(WebHandlerCMD.onBackEvent) {
                 data in
-                guard let pop = data as? Bool else {
+                guard let pop = (data ?? true) as? Bool else {
                     return
                 }
                 if pop {
