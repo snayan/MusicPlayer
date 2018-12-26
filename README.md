@@ -9,11 +9,12 @@
 
 效果图如下：
 
-<img src="screen/1.jpg" style="zoom:30%" />
+<img src="screen/1.jpg" width="375"  />
 
-<img src="screen/2.jpg" style="zoom:30%" />
+<img src="screen/2.jpg" width="375" />
 
-<img src="screen/3.jpg" style="zoom:30%" />
+<img src="screen/3.jpg" width="375" />
+
 
 #### 整理的参考文档清单
 
